@@ -1,4 +1,18 @@
-# Airline Company Software Project Report – Key Sections
+# Airline Company Software Project Report Template – Key Sections
+## ***IMPORTANT***
+All dependencies must be installed in the IDE with Maven -> instructions following:
+1. Go to [this link](https://maven.apache.org/download.cgi) and download the binary files.
+2. Extract binaries wherever preferred.
+3. Make sure the bin folder is included in the PATH environment variables.
+4. Restart the IDE if necessary and run the command `mvn -version` to check if it is included in the PATH environment variables.
+5. Run the command below to make sure you install all the dependencies declared in the pom.xml file
+```
+mvn clean install
+```
+6. Whenever any dependency is added or removed or changed, run this command (it simply updates the dependencies of the project)
+```
+mvn clean intall -U
+```
 
 Below is a summarized, markdown-ready structure for your airline software project report in Java, focusing on **flight booking and route management**—aligned with best practices outlined in the referenced document.
 
