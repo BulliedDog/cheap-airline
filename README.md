@@ -1,6 +1,6 @@
 # Airline Company Software Project Report Template – Key Sections
 <h3><b>Important</b></h3> 
-All dependencies must be installed in the IDE with Maven -> instructions following:
+$`\Longrightarrow`$ All dependencies must be installed in the IDE with Maven -> instructions following:
 1. Go to [this link](https://maven.apache.org/download.cgi) and download the binary files.
 2. Extract binaries wherever preferred.
 3. Make sure the bin folder is included in the PATH environment variables.
