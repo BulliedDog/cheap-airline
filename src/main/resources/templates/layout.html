@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:fragment="html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'SkyWings Airlines'">SkyWings Airlines</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { font-family: 'Outfit', sans-serif; transition: all 0.2s ease; }
+        .font-mono { font-family: 'Space Mono', monospace; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); }
+        .accent-gradient {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            animation: gradient-shift 1s ease infinite;
+        }
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+
+<nav class="glass sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="/" class="flex items-center space-x-2 group">
+                <div class="w-10 h-10 accent-gradient rounded-lg flex items-center justify-center group-hover:scale-110">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <span class="text-xl font-bold font-mono">SkyWings</span>
+            </a>
+
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="hover:text-blue-400 font-medium">Home</a>
+                <a href="/flights/search" class="hover:text-blue-400 font-medium">Book Flights</a>
+                <a href="/bookings" class="hover:text-blue-400 font-medium">My Bookings</a>
+
+                <div class="flex items-center space-x-4">
+                    <a href="/login" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div th:replace="~{::content}"></div>
+</main>
+
+<footer class="glass mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-gray-400">
+        <p>&copy; 2026 SkyWings Airlines. All rights reserved.</p>
+    </div>
+</footer>
+
+</body>
+</html>

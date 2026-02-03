@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{layout :: html(pageTitle='My Bookings - SkyWings Airlines', ~{::content})}">
+<head></head>
+<body>
+    <th:block th:fragment="content">
+        
+        <h1 class="text-4xl font-bold mb-8">My Bookings</h1>
+        
+        <!-- Tabs for filtering -->
+        <div class="flex space-x-4 mb-8 overflow-x-auto">
+            <button class="px-6 py-3 bg-blue-500 rounded-lg font-semibold whitespace-nowrap" onclick="filterBookings('all')">
+                All Bookings
+            </button>
+            <button class="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg font-semibold whitespace-nowrap" onclick="filterBookings('upcoming')">
+                Upcoming
+            </button>
+            <button class="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg font-semibold whitespace-nowrap" onclick="filterBookings('past')">
+                Past Trips
+            </button>
+            <button class="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg font-semibold whitespace-nowrap" onclick="filterBookings('cancelled')">
+                Cancelled
+            </button>
+        </div>
+        
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(bookings)}" class="glass rounded-2xl p-12 text-center">
+            <svg class="w-20 h-20 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <h3 class="text-2xl font-bold mb-2">No bookings yet</h3>
+            <p class="text-gray-400 mb-6">Start your journey by booking your first flight!</p>
+            <a href="/flights/search" class="inline-block px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold">
+                Search Flights
+            </a>
+        </div>
+        
+        <!-- Bookings List -->
+        <div class="space-y-6">
+            <div th:each="booking : ${bookings}" 
+                 th:attr="data-status=${booking.status}"
+                 class="booking-card glass rounded-2xl p-6 hover:scale-[1.01]">
+                
+                <!-- Booking Header -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-2">
+                            <h3 class="text-2xl font-bold" th:text="${booking.bookingReference}">SW-ABC123</h3>
+                            <span th:classappend="${booking.status == 'CONFIRMED' ? 'bg-green-500/20 text-green-400' : 
+                                                   booking.status == 'CANCELLED' ? 'bg-red-500/20 text-red-400' : 
+                                                   'bg-yellow-500/20 text-yellow-400'}"
+                                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                                  th:text="${booking.status}">
+                                CONFIRMED
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm">
+                            Booked on <span th:text="${#temporals.format(booking.bookingDate, 'MMM dd, yyyy')}">Jan 10, 2024</span>
+                        </p>
+                    </div>
+                    
+                    <div class="mt-4 md:mt-0">
+                        <p class="text-3xl font-bold accent-gradient bg-clip-text text-transparent" 
+                           th:text="'$' + ${booking.totalPrice}">$444</p>
+                    </div>
+                </div>
+                
+                <!-- Flight Details -->
+                <div class="bg-white/5 rounded-xl p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-lg font-bold font-mono" th:text="${booking.flight.flightNumber}">SW123</p>
+                            <p class="text-sm text-gray-400" th:text="${booking.flight.airline}">SkyWings Airlines</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-400">Aircraft</p>
+                            <p class="font-medium" th:text="${booking.flight.aircraft}">Boeing 737</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <!-- Departure -->
+                        <div>
+                            <p class="text-3xl font-bold font-mono" th:text="${#temporals.format(booking.flight.departureTime, 'HH:mm')}">10:30</p>
+                            <p class="text-gray-400" th:text="${booking.flight.origin}">NYC</p>
+                            <p class="text-gray-500 text-sm" th:text="${#temporals.format(booking.flight.departureTime, 'MMM dd, yyyy')}">Jan 15, 2024</p>
+                        </div>
+                        
+                        <!-- Duration -->
+                        <div class="text-center">
+                            <div class="flex items-center justify-center mb-2">
+                                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+                            </div>
+                            <p class="text-sm text-gray-400" th:text="${booking.flight.duration}">5h 30m</p>
+                        </div>
+                        
+                        <!-- Arrival -->
+                        <div class="text-right">
+                            <p class="text-3xl font-bold font-mono" th:text="${#temporals.format(booking.flight.arrivalTime, 'HH:mm')}">16:00</p>
+                            <p class="text-gray-400" th:text="${booking.flight.destination}">LAX</p>
+                            <p class="text-gray-500 text-sm" th:text="${#temporals.format(booking.flight.arrivalTime, 'MMM dd, yyyy')}">Jan 15, 2024</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Passengers -->
+                <div class="mb-6">
+                    <h4 class="font-semibold mb-3">Passengers</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div th:each="passenger : ${booking.passengers}" 
+                             class="flex items-center space-x-3 bg-white/5 rounded-lg p-3">
+                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold">
+                                <span th:text="${#strings.substring(passenger.firstName, 0, 1)}">J</span>
+                            </div>
+                            <div>
+                                <p class="font-medium" th:text="${passenger.firstName + ' ' + passenger.lastName}">John Doe</p>
+                                <p class="text-sm text-gray-400" th:text="${passenger.seatNumber}">12A</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex flex-wrap gap-3">
+                    <a th:href="@{/bookings/{id}/details(id=${booking.id})}" 
+                       class="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold">
+                        View Details
+                    </a>
+                    
+                    <a th:href="@{/bookings/{id}/ticket(id=${booking.id})}" 
+                       class="px-6 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg font-semibold">
+                        Download E-Ticket
+                    </a>
+                    
+                    <button th:if="${booking.status == 'CONFIRMED' && booking.canCancel}" 
+                            th:onclick="'confirmCancel(\'' + ${booking.id} + '\')'"
+                            class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold border border-red-500/30">
+                        Cancel Booking
+                    </button>
+                    
+                    <a th:if="${booking.canCheckIn}" 
+                       th:href="@{/bookings/{id}/check-in(id=${booking.id})}"
+                       class="px-6 py-3 bg-green-500 hover:bg-green-600 rounded-lg font-semibold">
+                        Web Check-In
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    </th:block>
+    
+    <th:block th:fragment="extra-scripts">
+        <script>
+            function filterBookings(status) {
+                const cards = document.querySelectorAll('.booking-card');
+                const buttons = document.querySelectorAll('button[onclick^="filterBookings"]');
+                
+                // Update button styles
+                buttons.forEach(btn => {
+                    btn.classList.remove('bg-blue-500');
+                    btn.classList.add('bg-white/5', 'hover:bg-white/10');
+                });
+                event.target.classList.remove('bg-white/5', 'hover:bg-white/10');
+                event.target.classList.add('bg-blue-500');
+                
+                // Filter cards
+                cards.forEach(card => {
+                    if (status === 'all') {
+                        card.style.display = 'block';
+                    } else if (status === 'upcoming') {
+                        const cardStatus = card.getAttribute('data-status');
+                        card.style.display = cardStatus === 'CONFIRMED' ? 'block' : 'none';
+                    } else if (status === 'past') {
+                        const cardStatus = card.getAttribute('data-status');
+                        card.style.display = cardStatus === 'COMPLETED' ? 'block' : 'none';
+                    } else if (status === 'cancelled') {
+                        const cardStatus = card.getAttribute('data-status');
+                        card.style.display = cardStatus === 'CANCELLED' ? 'block' : 'none';
+                    }
+                });
+            }
+            
+            function confirmCancel(bookingId) {
+                if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                    // Submit cancellation form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/bookings/' + bookingId + '/cancel';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

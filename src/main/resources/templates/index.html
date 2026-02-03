@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html}">
+<body>
+<th:block th:fragment="content">
+
+    <div class="relative overflow-hidden rounded-3xl glass p-12 md:p-20 mb-12">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 right-20 w-64 h-64 accent-gradient rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                Fly Beyond
+                <span class="block accent-gradient bg-clip-text text-transparent">Expectations</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
+                Book your next adventure with confidence. Experience seamless travel with SkyWings Airlines.
+            </p>
+        </div>
+    </div>
+
+    <div class="glass rounded-2xl p-2 mb-12 shadow-2xl border border-white/10">
+        <div class="flex border-b border-white/10 mb-6">
+            <button class="px-8 py-4 text-blue-400 border-b-2 border-blue-400 font-semibold">Book a Flight</button>
+            <button class="px-8 py-4 text-gray-400 hover:text-white transition">Check-in</button>
+            <button class="px-8 py-4 text-gray-400 hover:text-white transition">Flight Status</button>
+        </div>
+
+        <div class="p-6">
+            <form hx-get="/flights/search-results"
+                  hx-target="#search-results"
+                  hx-indicator="#search-loader"
+                  class="space-y-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="relative md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">From</label>
+                            <input type="text" name="origin" placeholder="Departure City (JFK, FCO...)" required
+                                   class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">To</label>
+                            <input type="text" name="destination" placeholder="Arrival City (LHR, DXB...)" required
+                                   class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Departure</label>
+                            <input type="date" name="departureDate" required
+                                   class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Passengers</label>
+                            <select name="passengers" class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl outline-none">
+                                <option value="1">1 Adult</option>
+                                <option value="2">2 Adults</option>
+                                <option value="3">3+ Adults</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4">
+                    <div class="flex gap-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="tripType" value="round" checked class="text-blue-500">
+                            <span class="text-sm">Round Trip</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="tripType" value="one" class="text-blue-500">
+                            <span class="text-sm">One Way</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="px-12 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all transform hover:-translate-y-1">
+                        Search Flights
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="search-results" class="mb-12 min-h-[100px] relative">
+        <div id="search-loader" class="htmx-indicator flex justify-center py-10">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+
+        <div class="text-center text-gray-500 py-10 border-2 border-dashed border-white/5 rounded-2xl">
+            Enter your destination to see available flights.
+        </div>
+    </div>
+
+    <div class="mb-12">
+        <h2 class="text-3xl font-bold mb-8 text-center">The SkyWings Experience</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass rounded-2xl p-8 hover:bg-white/5 transition-colors">
+                <div class="text-blue-400 mb-4">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Zero Hidden Fees</h3>
+                <p class="text-gray-400 text-sm">What you see is what you pay. No surprises at checkout.</p>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

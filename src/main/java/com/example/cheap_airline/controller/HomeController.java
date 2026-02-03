@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
     @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("message", "Welcome to Cheap Airline!");
-        return "home";
+    public String index(Model model) {
+        model.addAttribute("pageTitle", "Home - SkyWings Airlines");
+        // model.addAttribute("message", "Welcome!"); // Optional: if you want to test flash messages
+        return "index";
     }
 }
