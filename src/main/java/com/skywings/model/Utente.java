@@ -1,11 +1,12 @@
-package com.example.cheap_airline.model;
+package com.skywings.model;
 
 public class Utente {
     private Long id;
     private String username;
     private String email;
     private String password;
-    private String nomeCompleto;
+    private String nome;
+    private String cognome;
     private String ruolo;
 
     public Utente() {}
@@ -24,8 +25,11 @@ public class Utente {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public String getNomeCompleto() { return nomeCompleto; }
-    public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    public String getCognome() { return cognome; }
+    public void setCognome(String cognome) { this.cognome = cognome; }
 
     public String getRuolo() { return ruolo; }
     public void setRuolo(String ruolo) { this.ruolo = ruolo; }

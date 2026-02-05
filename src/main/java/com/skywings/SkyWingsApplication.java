@@ -1,11 +1,11 @@
-package com.example.cheap_airline;
+package com.skywings;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CheapAirlineApplication {
+public class SkyWingsApplication {
 	public static void main(String[] args) {
-        SpringApplication.run(CheapAirlineApplication.class, args);
+        SpringApplication.run(SkyWingsApplication.class, args);
 	}
 }
