@@ -2,6 +2,7 @@ package com.skywings.service;
 
 import com.skywings.model.Utente;
 import com.skywings.repository.UtenteRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -10,34 +11,49 @@ import java.util.Optional;
 public class AutenticazioneService {
 
     private final UtenteRepository utenteRepository;
+    // L'encoder per gestire l'hash in modo sicuro
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    // Spring inietta (collega) automaticamente il Repository qui dentro
     public AutenticazioneService(UtenteRepository utenteRepository) {
         this.utenteRepository = utenteRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     /**
-     * Questo metodo riceve username e password dal Controller.
-     * 1. Chiede al Database se l'utente esiste.
-     * 2. Se esiste, controlla se la password combacia.
+     * Metodo per il LOGIN:
+     * Confronta lo username e verifica se l'hash della password combacia.
      */
     public Utente login(String username, String passwordInserita) {
-
-        // 1. Cerchiamo l'utente nel DB
+        // 1. Cerchiamo l'utente nel DB tramite il tuo metodo personalizzato
         Optional<Utente> utenteDb = utenteRepository.trovaPerUsername(username);
 
-        // 2. Se l'utente c'è...
         if (utenteDb.isPresent()) {
             Utente utente = utenteDb.get();
 
-            // ...controlliamo la password (attenzione: in futuro useremo password criptate!)
-            if (utente.getPassword().equals(passwordInserita)) {
-                return utente; // Login OK! Restituisco l'utente completo
+            // 2. Usiamo passwordEncoder.matches invece di .equals()
+            // matches(testo_in_chiaro, hash_dal_db)
+            if (passwordEncoder.matches(passwordInserita, utente.getPassword())) {
+                return utente;
             }
         }
-
-        return null; // Utente non trovato o password sbagliata
+        return null;
     }
 
+    /**
+     * Metodo per la REGISTRAZIONE:
+     * Prende l'utente, cripta la sua password e lo salva.
+     */
+    public Utente registra(Utente utente) {
+        // 1. Prendiamo la password scritta dall'utente nel form
+        String passwordInChiaro = utente.getPassword();
 
+        // 2. Creiamo l'hash sicuro (Esempio: "mio123" -> "$2a$10$7R...")
+        String passwordHashata = passwordEncoder.encode(passwordInChiaro);
+
+        // 3. Settiamo la password criptata nell'oggetto
+        utente.setPassword(passwordHashata);
+
+        // 4. Salviamo l'utente nel database
+        return utenteRepository.save(utente);
+    }
 }

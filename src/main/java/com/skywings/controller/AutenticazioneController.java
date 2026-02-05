@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class AutenticazioneController {
 
-    private final AutenticazioneService authService;
+    private final AutenticazioneService autorizzazioneService
+;
     private final GestoreSessione gestoreSessione;
 
-    public AutenticazioneController(AutenticazioneService authService, GestoreSessione gestoreSessione) {
-        this.authService = authService;
+    public AutenticazioneController(AutenticazioneService autorizzazioneService
+, GestoreSessione gestoreSessione) {
+        this.autorizzazioneService
+ = autorizzazioneService
+;
         this.gestoreSessione = gestoreSessione;
     }
 
@@ -32,7 +36,8 @@ public class AutenticazioneController {
                               HttpSession session,
                               Model model) {
 
-        Utente utente = authService.login(username, password);
+        Utente utente = autorizzazioneService
+.login(username, password);
 
         if (utente != null) {
             gestoreSessione.salvaUtente(session, utente);
@@ -63,8 +68,8 @@ public class AutenticazioneController {
 
         try {
             // 2. Salviamo l'utente nel database tramite il service
-            // Assumo che il tuo authService abbia un metodo per registrare
-            Utente utenteSalvato = authService.registra(nuovoUtente);
+            // Assumo che il tuo autorizzazioneService abbia un metodo per registrare
+            Utente utenteSalvato = autorizzazioneService.registra(nuovoUtente);
 
             if (utenteSalvato != null) {
                 // 3. Login Automatico: salviamo l'utente appena creato nella sessione
