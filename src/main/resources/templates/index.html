@@ -13,10 +13,9 @@
         <div class="relative z-10">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                 Fly Beyond
-                <span class="block accent-gradient bg-clip-text text-transparent">Expectations</span>
+                <span th:text="${utente == null ? 'Expectations' : utente.username}" class="block accent-gradient bg-clip-text text-transparent"></span>
             </h1>
-            <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
-                Book your next adventure with confidence. Experience seamless travel with SkyWings Airlines.
+            <p th:text="${utente != null} ? |What's your next flight?| : 'Book your next adventure with confidence. Experience seamless travel with SkyWings Airlines.'" class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
             </p>
         </div>
     </div>

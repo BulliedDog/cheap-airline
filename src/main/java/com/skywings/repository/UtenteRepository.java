@@ -37,8 +37,10 @@ public class UtenteRepository implements UtenteDAO { // Implementa l'interfaccia
             return ps;
         }, keyHolder);
 
-        if (keyHolder.getKey() != null) {
-            utente.setId(keyHolder.getKey().longValue());
+        if (keyHolder.getKeys() != null && keyHolder.getKeys().containsKey("id")) {
+            // Estraiamo il valore associato alla colonna "id" generato dal db
+            Number generato = (Number) keyHolder.getKeys().get("id");
+            utente.setId(generato.longValue());
         }
         return utente;
     }

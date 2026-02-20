@@ -8,9 +8,3 @@ CREATE TABLE IF NOT EXISTS utenti(
     ruolo VARCHAR(20) NOT NULL CHECK (ruolo IN ('CLIENTE', 'ADMIN', 'PILOTA', 'HOSTESS'))
 );
 
-INSERT INTO utenti (username, email, password, nome, cognome, ruolo)
-VALUES
-('admin_boss', 'admin@skywings.it', 'admin123', 'Capo Supremo', 'boh', 'ADMIN'),
-('supermario', 'mario@email.it', 'cliente123', 'Mario Rossi', 'boh', 'CLIENTE'),
-('maverick', 'pilota@skywings.it', 'volo123', 'Maverick', 'boh', 'PILOTA')
-ON CONFLICT (username) DO NOTHING;

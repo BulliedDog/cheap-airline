@@ -11,15 +11,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class AutenticazioneController {
 
-    private final AutenticazioneService autorizzazioneService
-;
+    private final AutenticazioneService autorizzazioneService;
     private final GestoreSessione gestoreSessione;
 
-    public AutenticazioneController(AutenticazioneService autorizzazioneService
-, GestoreSessione gestoreSessione) {
-        this.autorizzazioneService
- = autorizzazioneService
-;
+    public AutenticazioneController(AutenticazioneService autorizzazioneService, GestoreSessione gestoreSessione) {
+        this.autorizzazioneService = autorizzazioneService;
         this.gestoreSessione = gestoreSessione;
     }
 
@@ -36,11 +32,11 @@ public class AutenticazioneController {
                               HttpSession session,
                               Model model) {
 
-        Utente utente = autorizzazioneService
-.login(username, password);
+        Utente utente = autorizzazioneService.login(username, password);
 
         if (utente != null) {
             gestoreSessione.salvaUtente(session, utente);
+            model.addAttribute("utente", utente);
             return "index";
         } else {
             model.addAttribute("errore", "Credenziali non valide!");
@@ -64,7 +60,7 @@ public class AutenticazioneController {
         nuovoUtente.setPassword(password); // Se hai un encoder, usalo qui!
         nuovoUtente.setNome(nome);
         nuovoUtente.setCognome(cognome);
-        nuovoUtente.setRuolo("UTENTE");
+        nuovoUtente.setRuolo("CLIENTE");
 
         try {
             // 2. Salviamo l'utente nel database tramite il service
@@ -83,6 +79,7 @@ public class AutenticazioneController {
             }
         } catch (Exception e) {
             // Gestione errore (es: username o email già esistenti)
+            e.printStackTrace();
             model.addAttribute("errore", "Username o Email già utilizzati!");
             return "login";
         }
