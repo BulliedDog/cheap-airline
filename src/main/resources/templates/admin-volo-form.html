@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: html(pageTitle='Dettaglio Volo - SkyWings Admin', ~{::content})}">
+<head></head>
+<body>
+<th:block th:fragment="content">
+
+  <div class="mb-8 flex items-center space-x-4">
+    <a href="/admin/voli" class="text-gray-400 hover:text-white transition">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+    </a>
+    <div>
+      <h1 class="text-4xl font-bold mb-2">Dettaglio Volo</h1>
+      <p class="text-gray-400">Inserisci o modifica le informazioni del volo</p>
+    </div>
+  </div>
+
+  <div class="glass rounded-2xl p-8 max-w-4xl">
+    <form th:action="@{/admin/voli}" th:object="${volo}" method="POST" class="space-y-6">
+
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="codiceVolo">Codice Volo</label>
+          <input th:field="*{codiceVolo}" type="text" id="codiceVolo" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="es. SW-101" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="prezzoBase">Prezzo Base (€)</label>
+          <input th:field="*{prezzoBase}" type="number" step="0.01" id="prezzoBase" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" placeholder="es. 150.00" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="idCittaPartenza">ID Città Partenza</label>
+          <input th:field="*{idCittaPartenza}" type="number" id="idCittaPartenza" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="idCittaArrivo">ID Città Arrivo</label>
+          <input th:field="*{idCittaArrivo}" type="number" id="idCittaArrivo" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="orarioPartenza">Orario Partenza</label>
+          <input th:field="*{orarioPartenza}" type="datetime-local" id="orarioPartenza" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="orarioArrivo">Orario Arrivo</label>
+          <input th:field="*{orarioArrivo}" type="datetime-local" id="orarioArrivo" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="stato">Stato Volo</label>
+          <select th:field="*{stato}" id="stato" class="w-full bg-[#1a1c23] border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition">
+            <option value="PROGRAMMATO">Programmato</option>
+            <option value="IN_VOLO">In Volo</option>
+            <option value="ATTERRATO">Atterrato</option>
+            <option value="CANCELLATO">Cancellato</option>
+            <option value="IN_RITARDO">In Ritardo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-end space-x-4">
+        <a href="/admin/voli" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-xl transition duration-300">Annulla</a>
+        <button type="submit" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-xl transition duration-300 shadow-lg hover:shadow-green-500/50">
+          Salva Volo
+        </button>
+      </div>
+    </form>
+  </div>
+</th:block>
+</body>
+</html>
