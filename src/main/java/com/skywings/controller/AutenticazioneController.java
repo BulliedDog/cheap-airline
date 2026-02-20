@@ -37,7 +37,7 @@ public class AutenticazioneController {
         if (utente != null) {
             gestoreSessione.salvaUtente(session, utente);
             model.addAttribute("utente", utente);
-            return "index";
+            return "redirect:/";
         } else {
             model.addAttribute("errore", "Credenziali non valide!");
             return "login";
