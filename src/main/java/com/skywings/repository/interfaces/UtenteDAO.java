@@ -1,4 +1,4 @@
-package com.skywings.repository;
+package com.skywings.repository.interfaces;
 
 import com.skywings.model.Utente;
 import java.util.Optional;

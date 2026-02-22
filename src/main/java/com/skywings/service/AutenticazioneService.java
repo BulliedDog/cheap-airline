@@ -1,7 +1,7 @@
 package com.skywings.service;
 
 import com.skywings.model.Utente;
-import com.skywings.repository.UtenteRepository;
+import com.skywings.repository.repositories.UtenteRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

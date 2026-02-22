@@ -1,7 +1,8 @@
-package com.skywings.repository;
+package com.skywings.repository.repositories;
 
 import com.skywings.mapper.UtenteMapper;
 import com.skywings.model.Utente;
+import com.skywings.repository.interfaces.UtenteDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

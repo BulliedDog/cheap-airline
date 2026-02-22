@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: html(pageTitle='Gestione Voli - SkyWings Admin', ~{::content})}">
+      th:replace="~{layout :: html('Gestione Voli - SkyWings Admin', ~{::content})}">
 <head></head>
 <body>
 <th:block th:fragment="content">
@@ -30,31 +30,50 @@
           <th class="py-3 px-4 font-semibold text-gray-400 text-sm text-right">Azioni</th>
         </tr>
         </thead>
-        <tbody>
-        <tr class="border-b border-white/5 hover:bg-white/5 transition duration-150">
-          <td class="py-4 px-4 font-mono font-bold text-blue-400">SW-101</td>
-          <td class="py-4 px-4">
-            <p class="font-medium">Milano (MXP) → New York (JFK)</p>
-          </td>
-          <td class="py-4 px-4 text-sm text-gray-300">
-            <p>15 Ott 2024, 10:00</p>
-            <p>15 Ott 2024, 14:30</p>
-          </td>
-          <td class="py-4 px-4">
-            <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-semibold">PROGRAMMATO</span>
-          </td>
-          <td class="py-4 px-4 text-right flex justify-end space-x-3">
-            <a href="/admin/voli/modifica/1" class="text-yellow-400 hover:text-yellow-300 transition">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-            </a>
-            <form action="/admin/voli/elimina/1" method="post" onsubmit="return confirm('Sei sicuro di voler eliminare questo volo?');">
-              <button type="submit" class="text-red-400 hover:text-red-300 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-              </button>
-            </form>
-          </td>
-        </tr>
-        </tbody>
+          <tbody>
+          <tr th:each="volo : ${voli}" class="border-b border-white/5 hover:bg-white/5 transition duration-150">
+
+              <td class="py-4 px-4 font-mono font-bold text-blue-400" th:text="${volo.codiceVolo}">SW-101</td>
+
+              <td class="py-4 px-4">
+                  <p class="font-medium">
+                      <span th:text="${volo.idCittaPartenza}">ID Partenza</span> →
+                      <span th:text="${volo.idCittaArrivo}">ID Arrivo</span>
+                  </p>
+              </td>
+
+              <td class="py-4 px-4 text-sm text-gray-300">
+                  <p th:text="${#temporals.format(volo.orarioPartenza, 'dd MMM yyyy, HH:mm')}">15 Ott 2024, 10:00</p>
+                  <p th:text="${#temporals.format(volo.orarioArrivo, 'dd MMM yyyy, HH:mm')}">15 Ott 2024, 14:30</p>
+              </td>
+
+              <td class="py-4 px-4">
+            <span th:classappend="${volo.stato.name() == 'PROGRAMMATO' ? 'bg-green-500/20 text-green-400' :
+                               (volo.stato.name() == 'CANCELLATO' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400')}"
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                  th:text="${volo.stato}">
+                PROGRAMMATO
+            </span>
+              </td>
+
+              <td class="py-4 px-4 text-right flex justify-end space-x-3">
+                  <a th:href="@{/admin/voli/modifica/{id}(id=${volo.id})}" class="text-yellow-400 hover:text-yellow-300 transition">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                  </a>
+
+                  <form th:action="@{/admin/voli/elimina/{id}(id=${volo.id})}" method="post"
+                        onsubmit="return confirm('Sei sicuro di voler eliminare questo volo?');">
+                      <button type="submit" class="text-red-400 hover:text-red-300 transition">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          </svg>
+                      </button>
+                  </form>
+              </td>
+          </tr>
+          </tbody>
       </table>
     </div>
   </div>

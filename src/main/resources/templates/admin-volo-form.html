@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: html(pageTitle='Dettaglio Volo - SkyWings Admin', ~{::content})}">
+      th:replace="~{layout :: html('Dettaglio Volo - SkyWings Admin', ~{::content})}">
 <head></head>
 <body>
 <th:block th:fragment="content">
@@ -31,15 +31,29 @@
           <input th:field="*{prezzoBase}" type="number" step="0.01" id="prezzoBase" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" placeholder="es. 150.00" required>
         </div>
 
-        <div>
-          <label class="block text-gray-300 text-sm font-bold mb-2" for="idCittaPartenza">ID Città Partenza</label>
-          <input th:field="*{idCittaPartenza}" type="number" id="idCittaPartenza" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
-        </div>
+          <div>
+              <label class="block text-gray-300 text-sm font-bold mb-2">Città Partenza</label>
+              <select th:field="*{idCittaPartenza}" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+                  <option value="" disabled selected>Seleziona partenza</option>
+                  <option th:each="c : ${citta}" th:value="${c.id}" th:text="${c.nome}"></option>
+              </select>
+          </div>
 
-        <div>
-          <label class="block text-gray-300 text-sm font-bold mb-2" for="idCittaArrivo">ID Città Arrivo</label>
-          <input th:field="*{idCittaArrivo}" type="number" id="idCittaArrivo" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
-        </div>
+          <div>
+              <label class="block text-gray-300 text-sm font-bold mb-2">Città Arrivo</label>
+              <select th:field="*{idCittaArrivo}" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+                  <option value="" disabled selected>Seleziona arrivo</option>
+                  <option th:each="c : ${citta}" th:value="${c.id}" th:text="${c.nome}"></option>
+              </select>
+          </div>
+
+          <div class="md:col-span-2">
+              <label class="block text-gray-300 text-sm font-bold mb-2">Aereo Assegnato</label>
+              <select th:field="*{idAereo}" class="w-full bg-black/30 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition" required>
+                  <option value="" disabled selected>Scegli l'aeromobile per questo volo</option>
+                  <option th:each="a : ${aerei}" th:value="${a.id}" th:text="${a.produttore + ' ' + a.modello}"></option>
+              </select>
+          </div>
 
         <div>
           <label class="block text-gray-300 text-sm font-bold mb-2" for="orarioPartenza">Orario Partenza</label>
