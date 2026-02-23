@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: html}">
-<body>
+      th:replace="~{layout :: html('SkyWings Login', ~{::content})}"><body>
 <th:block th:fragment="content">
 
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
