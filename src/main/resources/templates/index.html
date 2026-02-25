@@ -13,7 +13,7 @@
         <div class="relative z-10">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                 Fly Beyond
-                <span th:text="${utente == null ? 'Expectations' : utente.username}" class="block accent-gradient bg-clip-text text-transparent"></span>
+                <span th:text="${utente == null ? 'Expectations' : utente.nome}" class="block accent-gradient bg-clip-text text-transparent"></span>
             </h1>
             <p th:text="${utente != null} ? |What's your next flight?| : 'Book your next adventure with confidence. Experience seamless travel with SkyWings Airlines.'" class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
             </p>
@@ -91,6 +91,48 @@
 
         <div class="text-center text-gray-500 py-10 border-2 border-dashed border-white/5 rounded-2xl">
             Enter your destination to see available flights.
+        </div>
+    </div>
+
+    <div class="mb-12">
+        <h2 class="text-3xl font-bold mb-8 text-center">Tutti i Voli Programmati</h2>
+
+        <div class="glass rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-white/5 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
+                        <th class="p-6 font-semibold">Codice Volo</th>
+                        <th class="p-6 font-semibold">Partenza</th>
+                        <th class="p-6 font-semibold">Arrivo</th>
+                        <th class="p-6 font-semibold">Prezzo Base</th>
+                        <th class="p-6 font-semibold">Stato</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10 text-gray-200">
+                    <tr th:each="volo : ${voli}" class="hover:bg-white/5 transition-colors">
+                        <td class="p-6 font-medium text-blue-400" th:text="${volo.codiceVolo}"></td>
+
+                        <td class="p-6" th:text="${#temporals.format(volo.orarioPartenza, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="p-6" th:text="${#temporals.format(volo.orarioArrivo, 'dd/MM/yyyy HH:mm')}"></td>
+
+                        <td class="p-6 font-semibold" th:text="${volo.prezzoBase} + ' €'"></td>
+
+                        <td class="p-6">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20"
+                                      th:text="${volo.stato}">
+                                </span>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(voli)}">
+                        <td colspan="5" class="p-12 text-center text-gray-500">
+                            Nessun volo programmato al momento.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
