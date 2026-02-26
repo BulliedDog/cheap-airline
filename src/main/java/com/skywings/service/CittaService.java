@@ -22,7 +22,7 @@ public class CittaService {
                 .orElseThrow(() -> new RuntimeException("Città non trovata con ID: " + id));
     }
 
-    public void createCitta(Citta citta) {
+    public void addCitta(Citta citta) {
         cittaDAO.save(citta);
     }
 

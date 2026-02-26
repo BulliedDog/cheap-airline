@@ -1,15 +1,19 @@
 package com.skywings.controller;
 
+import com.skywings.model.Aereo;
+import com.skywings.model.Citta;
 import com.skywings.model.Volo;
 import com.skywings.model.Utente;
-import com.skywings.service.VoloService;
-import com.skywings.service.AereoService;
-import com.skywings.service.CittaService;
+import com.skywings.repository.interfaces.UtenteDAO;
+import com.skywings.service.*;
 import com.skywings.util.GestoreSessione;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -19,16 +23,21 @@ public class AdminController {
     private final VoloService voloService;
     private final AereoService aereoService;
     private final CittaService cittaService;
+    private final UtenteService utenteService;
+    private final VoloEquipaggioService equipaggioService;
 
-    // Costruttore con iniezione di tutti i servizi necessari
     public AdminController(GestoreSessione gestoreSessione,
                            VoloService voloService,
                            AereoService aereoService,
-                           CittaService cittaService) {
+                           CittaService cittaService,
+                           UtenteService utenteService,
+                           VoloEquipaggioService equipaggioService) {
         this.gestoreSessione = gestoreSessione;
         this.voloService = voloService;
         this.aereoService = aereoService;
         this.cittaService = cittaService;
+        this.utenteService = utenteService;
+        this.equipaggioService = equipaggioService;
     }
 
     private boolean isAdminLoggato(HttpSession session) {
@@ -36,65 +45,34 @@ public class AdminController {
         return utente != null && "ADMIN".equalsIgnoreCase(utente.getRuolo());
     }
 
-    // --- LISTA VOLI ---
-    @GetMapping("/voli")
-    public String listaVoli(HttpSession session, Model model) {
+    @GetMapping("")
+    public String dashboardPrincipale(HttpSession session, Model model) {
         if (!isAdminLoggato(session)) return "redirect:/login";
 
-        // Recupero reale dal database tramite il Service
-        model.addAttribute("voli", voloService.getAllVoli());
-        return "admin-voli";
+        model.addAttribute("countVoli", voloService.getAllVoli().size());
+        model.addAttribute("countAerei", aereoService.getAllAerei().size());
+        model.addAttribute("countCitta", cittaService.getAllCitta().size());
+        model.addAttribute("countUtenti", utenteService.getAllUtenti().size());
+        model.addAttribute("countEquipaggio", equipaggioService.getAllLegami().size());
+
+        return "admin-dashboard";
     }
 
-    // --- FORM NUOVO VOLO ---
-    @GetMapping("/voli/nuovo")
-    public String nuovoVolo(HttpSession session, Model model) {
+    @PostMapping("/equipaggio/elimina/{compositeId}")
+    public String eliminaAssegnazione(@PathVariable String compositeId, HttpSession session) {
         if (!isAdminLoggato(session)) return "redirect:/login";
 
-        model.addAttribute("volo", new Volo());
-        // Passiamo alla vista le liste per popolare le select (tendine) nel form
-        model.addAttribute("aerei", aereoService.getAllAerei());
-        model.addAttribute("citta", cittaService.getAllCitta());
-        model.addAttribute("statiVolo", Volo.StatoVolo.values());
+        try {
+            String[] ids = compositeId.split("-");
+            Long idVolo = Long.parseLong(ids[0]);
+            Long idUtente = Long.parseLong(ids[1]);
 
-        return "admin-volo-form";
-    }
-
-    // --- SALVATAGGIO (CREATE/UPDATE) ---
-    @PostMapping("/voli")
-    public String salvaVolo(@ModelAttribute Volo volo, HttpSession session) {
-        if (!isAdminLoggato(session)) return "redirect:/login";
-
-        if (volo.getId() == null) {
-            voloService.createVolo(volo);
-        } else {
-            voloService.updateVolo(volo);
+            // Ora usiamo l'istanza iniettata correttamente, non un "new" fatto a caso
+            equipaggioService.rimuoviMembro(idVolo, idUtente);
+        } catch (Exception e) {
+            // Log dell'errore se il formato dell'ID è sbagliato
         }
-        return "redirect:/admin/voli";
-    }
 
-    // --- FORM MODIFICA ---
-    @GetMapping("/voli/modifica/{id}")
-    public String modificaVolo(@PathVariable Long id, HttpSession session, Model model) {
-        if (!isAdminLoggato(session)) return "redirect:/login";
-
-        Volo volo = voloService.getVoloById(id);
-        if (volo == null) return "redirect:/admin/voli?error=notfound";
-
-        model.addAttribute("volo", volo);
-        model.addAttribute("aerei", aereoService.getAllAerei());
-        model.addAttribute("citta", cittaService.getAllCitta());
-        model.addAttribute("statiVolo", Volo.StatoVolo.values());
-
-        return "admin-volo-form";
-    }
-
-    // --- ELIMINAZIONE ---
-    @PostMapping("/voli/elimina/{id}")
-    public String eliminaVolo(@PathVariable Long id, HttpSession session) {
-        if (!isAdminLoggato(session)) return "redirect:/login";
-
-        voloService.deleteVolo(id);
-        return "redirect:/admin/voli";
+        return "redirect:/admin/equipaggio";
     }
 }

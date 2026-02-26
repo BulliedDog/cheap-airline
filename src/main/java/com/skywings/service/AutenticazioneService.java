@@ -1,7 +1,7 @@
 package com.skywings.service;
 
 import com.skywings.model.Utente;
-import com.skywings.repository.repositories.UtenteRepository;
+import com.skywings.repository.interfaces.UtenteDAO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +10,12 @@ import java.util.Optional;
 @Service
 public class AutenticazioneService {
 
-    private final UtenteRepository utenteRepository;
+    private final UtenteDAO utenteDAO;
     // L'encoder per gestire l'hash in modo sicuro
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AutenticazioneService(UtenteRepository utenteRepository) {
-        this.utenteRepository = utenteRepository;
+    public AutenticazioneService(UtenteDAO utenteRepository) {
+        this.utenteDAO = utenteRepository; // CORRETTO
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -24,14 +24,11 @@ public class AutenticazioneService {
      * Confronta lo username e verifica se l'hash della password combacia.
      */
     public Utente login(String username, String passwordInserita) {
-        // 1. Cerchiamo l'utente nel DB tramite il tuo metodo personalizzato
-        Optional<Utente> utenteDb = utenteRepository.trovaPerUsername(username);
+        // Cerchiamo per username come da tabella
+        Optional<Utente> utenteDb = utenteDAO.findByUsername(username);
 
         if (utenteDb.isPresent()) {
             Utente utente = utenteDb.get();
-
-            // 2. Usiamo passwordEncoder.matches invece di .equals()
-            // matches(testo_in_chiaro, hash_dal_db)
             if (passwordEncoder.matches(passwordInserita, utente.getPassword())) {
                 return utente;
             }
@@ -54,6 +51,6 @@ public class AutenticazioneService {
         utente.setPassword(passwordHashata);
 
         // 4. Salviamo l'utente nel database
-        return utenteRepository.save(utente);
+        return utenteDAO.save(utente);
     }
 }

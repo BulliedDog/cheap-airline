@@ -1,0 +1,28 @@
+<div th:fragment="universal-form(action, object, fields)">
+    <form th:action="${action}" th:object="${__${object}__}" method="post" class="glass p-8 rounded-2xl space-y-6">
+
+        <input type="hidden" th:field="*{id}" th:if="${object.id != null}" />
+
+        <div th:each="field : ${fields}" class="space-y-2">
+            <label class="block text-gray-400 text-sm font-semibold" th:text="${field.label}"></label>
+
+            <input th:if="${field.type == 'text' or field.type == 'number' or field.type == 'datetime-local'}"
+                   th:type="${field.type}"
+                   th:field="*{__${field.name}__}"
+                   class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500 outline-none transition" />
+
+            <select th:if="${field.type == 'select'}"
+                    th:field="*{__${field.name}__}"
+                    class="w-full bg-[#1e293b] border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                <option value="" th:text="'Seleziona ' + ${field.label}"></option>
+                <option th:each="opt : ${__${field.optionsName}__}"
+                        th:value="${opt.id}"
+                        th:text="${opt.nome ?: (opt.produttore + ' ' + opt.modello)}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-500/20">
+            Salva Informazioni
+        </button>
+    </form>
+</div>

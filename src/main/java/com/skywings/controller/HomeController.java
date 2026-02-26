@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     private final GestoreSessione gestoreSessione;
-    private final VoloService voloService; // Nuova dipendenza
+    private final VoloService voloService;
 
-    // Iniezione di VoloService tramite costruttore
     public HomeController(GestoreSessione gestoreSessione, VoloService voloService) {
         this.gestoreSessione = gestoreSessione;
         this.voloService = voloService;
@@ -25,8 +24,6 @@ public class HomeController {
 
         Utente utenteLoggato = gestoreSessione.getUtenteCorrente(session);
         model.addAttribute("utente", utenteLoggato);
-
-        // Recuperiamo i voli e li passiamo al modello
         model.addAttribute("voli", voloService.getAllVoli());
 
         return "index";

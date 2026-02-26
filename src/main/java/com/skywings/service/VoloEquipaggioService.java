@@ -1,8 +1,8 @@
 package com.skywings.service;
 
 import com.skywings.model.VoloEquipaggio;
+import com.skywings.model.VoloEquipaggioDTO;
 import com.skywings.repository.interfaces.VoloEquipaggioDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +10,27 @@ import java.util.List;
 @Service
 public class VoloEquipaggioService {
 
-    @Autowired
-    private VoloEquipaggioDAO voloEquipaggioDAO;
+    private final VoloEquipaggioDAO voloEquipaggioDAO;
 
-    public List<VoloEquipaggio> getEquipaggioPerVolo(Long idVolo) {
-        return voloEquipaggioDAO.findByVoloId(idVolo);
+    public VoloEquipaggioService(VoloEquipaggioDAO voloEquipaggioDAO) {
+        this.voloEquipaggioDAO = voloEquipaggioDAO;
     }
 
-    public void assegnaMembro(VoloEquipaggio ve) {
+    // Questo è quello che mancava per il contatore della dashboard!
+    public List<VoloEquipaggio> getAllLegami() {
+        return voloEquipaggioDAO.findAll();
+    }
+
+    // Questo serve per la tabella "bella" con i nomi dei piloti e i codici volo
+    public List<VoloEquipaggioDTO> getAllDettagli() {
+        // Assicurati che il metodo findAllDettagli() sia presente nel tuo VoloEquipaggioRepository
+        return voloEquipaggioDAO.findAllDettagli();
+    }
+
+    public void assegnaMembro(Long idVolo, Long idUtente) {
+        VoloEquipaggio ve = new VoloEquipaggio();
+        ve.setIdVolo(idVolo);
+        ve.setIdUtente(idUtente);
         voloEquipaggioDAO.save(ve);
     }
 
