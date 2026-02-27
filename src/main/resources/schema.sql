@@ -44,3 +44,10 @@ CREATE TABLE IF NOT EXISTS equipaggio_volo (
     note_assegnazione VARCHAR(255), -- Es: "Capo cabina", "Primo Ufficiale"
     PRIMARY KEY (id_volo, id_utente)
 );
+
+CREATE TABLE IF NOT EXISTS ricerche_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    origine_ricercata VARCHAR(255),
+    destinazione_ricercata VARCHAR(255),
+    data_ricerca TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

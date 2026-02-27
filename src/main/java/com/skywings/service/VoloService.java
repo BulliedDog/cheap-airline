@@ -21,6 +21,10 @@ public class VoloService {
         return voloDAO.findById(id).orElse(null);
     }
 
+    public void getVoliByCitta(String nome){
+
+    }
+
     public void createVolo(Volo volo) {
         voloDAO.save(volo);
     }

@@ -28,90 +28,69 @@
         </div>
 
         <div class="p-6">
-            <form hx-get="/flights/search-results"
-                  hx-target="#search-results"
-                  hx-indicator="#search-loader"
-                  class="space-y-6">
-
+            <form hx-get="/flights/search-results" hx-target="#search-results" class="p-6 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="relative md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">From</label>
-                            <input type="text" name="origin" placeholder="Departure City (JFK, FCO...)" required
-                                   class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">To</label>
-                            <input type="text" name="destination" placeholder="Arrival City (LHR, DXB...)" required
-                                   class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all outline-none">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Departure</label>
-                            <input type="date" name="departureDate" required
+                            <input type="text" name="origin" placeholder="Type city name (e.g. Rome)" required
                                    class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">Passengers</label>
-                            <select name="passengers" class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl outline-none">
-                                <option value="1">1 Adult</option>
-                                <option value="2">2 Adults</option>
-                                <option value="3">3+ Adults</option>
-                            </select>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-2">To</label>
+                            <input type="text" name="destination" placeholder="Type city name (e.g. Berlin)" required
+                                   class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
                     </div>
                 </div>
-
-                <div class="flex items-center justify-between pt-4">
-                    <div class="flex gap-4">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" name="tripType" value="round" checked class="text-blue-500">
-                            <span class="text-sm">Round Trip</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" name="tripType" value="one" class="text-blue-500">
-                            <span class="text-sm">One Way</span>
-                        </label>
-                    </div>
-
-                    <button type="submit" class="px-12 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all transform hover:-translate-y-1">
-                        Search Flights
-                    </button>
-                </div>
+                <button type="submit" class="px-12 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold transition-all">
+                    Search Flights
+                </button>
             </form>
         </div>
     </div>
 
-    <div id="search-results" class="mb-12 min-h-[100px] relative">
-        <div id="search-loader" class="htmx-indicator flex justify-center py-10">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-
-        <div class="text-center text-gray-500 py-10 border-2 border-dashed border-white/5 rounded-2xl">
-            Enter your destination to see available flights.
-        </div>
-    </div>
-
     <div class="mb-12">
-        <h2 class="text-3xl font-bold mb-8 text-center">Tutti i Voli Programmati</h2>
+        <h2 class="text-3xl font-bold mb-8 text-center">All Scheduled Flights</h2>
 
         <div class="glass rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                     <tr class="bg-white/5 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
-                        <th class="p-6 font-semibold">Codice Volo</th>
-                        <th class="p-6 font-semibold">Partenza</th>
-                        <th class="p-6 font-semibold">Arrivo</th>
-                        <th class="p-6 font-semibold">Prezzo Base</th>
-                        <th class="p-6 font-semibold">Stato</th>
+                        <th class="p-6 font-semibold">Code</th>
+                        <th class="p-6 font-semibold">Route</th>
+                        <th class="p-6 font-semibold">Departure</th>
+                        <th class="p-6 font-semibold">Arrival</th>
+                        <th class="p-6 font-semibold">Price</th>
+                        <th class="p-6 font-semibold">Status</th>
                     </tr>
                     </thead>
                     <tbody class="divide-y divide-white/10 text-gray-200">
                     <tr th:each="volo : ${voli}" class="hover:bg-white/5 transition-colors">
-                        <td class="p-6 font-medium text-blue-400" th:text="${volo.codiceVolo}"></td>
+
+                        <td class="p-6 font-medium text-blue-400">
+                            <a th:href="@{/flights/detail/{id}(id=${volo.id})}"
+                               class="hover:underline hover:text-blue-300 transition-all font-bold tracking-wider">
+                                <span th:text="${volo.codiceVolo}"></span>
+                            </a>
+                        </td>
+
+                        <td class="p-6">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-white"
+                                      th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaPartenza) : 'ID: ' + volo.idCittaPartenza}">
+                                </span>
+
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+
+                                <span class="font-bold text-white"
+                                      th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaArrivo) : 'ID: ' + volo.idCittaArrivo}">
+                                </span>
+                            </div>
+                        </td>
 
                         <td class="p-6" th:text="${#temporals.format(volo.orarioPartenza, 'dd/MM/yyyy HH:mm')}"></td>
                         <td class="p-6" th:text="${#temporals.format(volo.orarioArrivo, 'dd/MM/yyyy HH:mm')}"></td>
@@ -119,19 +98,162 @@
                         <td class="p-6 font-semibold" th:text="${volo.prezzoBase} + ' €'"></td>
 
                         <td class="p-6">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20"
-                                      th:text="${volo.stato}">
-                                </span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20"
+                                  th:text="${volo.stato}">
+                            </span>
                         </td>
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(voli)}">
-                        <td colspan="5" class="p-12 text-center text-gray-500">
-                            Nessun volo programmato al momento.
+                        <td colspan="6" class="p-12 text-center text-gray-500">
+                            No flights scheduled at the moment.
                         </td>
                     </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-20">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <h2 class="text-4xl font-bold">Explore the World</h2>
+                <p class="text-gray-400 mt-2">Most loved destinations by SkyWings passengers</p>
+            </div>
+            <a href="#" class="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-2">
+                View all <span class="text-xl">→</span>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-blue-500/20 shadow-xl">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+                <div class="absolute bottom-0 p-6 w-full">
+                    <span class="px-3 py-1 bg-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Asia</span>
+                    <h4 class="text-2xl font-bold">Tokyo</h4>
+                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €599</p>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-purple-500/20 shadow-xl">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+                <div class="absolute bottom-0 p-6 w-full">
+                    <span class="px-3 py-1 bg-purple-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Europe</span>
+                    <h4 class="text-2xl font-bold">Paris</h4>
+                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €49</p>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-indigo-500/20 shadow-xl">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=800');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+                <div class="absolute bottom-0 p-6 w-full">
+                    <span class="px-3 py-1 bg-indigo-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">America</span>
+                    <h4 class="text-2xl font-bold">New York</h4>
+                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €420</p>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-emerald-500/20 shadow-xl">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=800');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+                <div class="absolute bottom-0 p-6 w-full">
+                    <span class="px-3 py-1 bg-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Relax</span>
+                    <h4 class="text-2xl font-bold">Maldives</h4>
+                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €750</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold mb-10 text-center uppercase tracking-tighter">Giants of the Sky</h2>
+
+        <div class="flex space-x-6 overflow-x-auto pb-8 snap-x no-scrollbar">
+            <div class="snap-center shrink-0 w-[300px] md:w-[600px] glass rounded-3xl overflow-hidden border border-white/10">
+                <div class="h-48 md:h-64 bg-slate-800 relative overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1544015759-44059074d32a?q=80&w=1200" class="w-full h-full object-cover opacity-60">
+                    <div class="absolute top-6 left-6">
+                        <h4 class="text-3xl font-black italic">BOEING 787</h4>
+                        <p class="text-blue-400 font-mono tracking-widest text-xs">DREAMLINER</p>
+                    </div>
+                </div>
+                <div class="p-6 grid grid-cols-3 gap-4 text-center">
+                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Capacity</p>
+                        <p class="font-bold">290 People</p>
+                    </div>
+                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Range</p>
+                        <p class="font-bold font-mono text-sm">14,140km</p>
+                    </div>
+                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Comfort</p>
+                        <p class="font-bold text-sm">Ultra-Silent</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="snap-center shrink-0 w-[300px] md:w-[600px] glass rounded-3xl overflow-hidden border border-white/10">
+                <div class="h-48 md:h-64 bg-slate-800 relative overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1559348349-86f1f65817fe?q=80&w=1200" class="w-full h-full object-cover opacity-60">
+                    <div class="absolute top-6 left-6">
+                        <h4 class="text-3xl font-black italic text-purple-400">AIRBUS A350</h4>
+                        <p class="text-white font-mono tracking-widest text-xs">XWB - EXTRA WIDE BODY</p>
+                    </div>
+                </div>
+                <div class="p-6 grid grid-cols-3 gap-4 text-center">
+                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Business</p>
+                        <p class="font-bold">32 Suites</p>
+                    </div>
+                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">WiFi</p>
+                        <p class="font-bold">High Speed</p>
+                    </div>
+                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase">Eco</p>
+                        <p class="font-bold font-mono text-sm">-25% CO2</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+        <div class="glass p-6 rounded-3xl text-center border-white/5">
+            <p class="text-blue-400 text-xs font-mono uppercase mb-1">Destinations</p>
+            <h4 class="text-3xl font-black">120+</h4>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center border-white/5">
+            <p class="text-purple-400 text-xs font-mono uppercase mb-1">Daily Flights</p>
+            <h4 class="text-3xl font-black">450</h4>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center border-white/5">
+            <p class="text-emerald-400 text-xs font-mono uppercase mb-1">Safety Rating</p>
+            <h4 class="text-3xl font-black italic">5/5</h4>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center border-white/5">
+            <p class="text-amber-400 text-xs font-mono uppercase mb-1">Active Fleet</p>
+            <h4 class="text-3xl font-black">84</h4>
+        </div>
+    </div>
+
+    <div class="glass rounded-[3rem] p-12 overflow-hidden relative mb-24 border border-white/10">
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/20 blur-[80px]"></div>
+        <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-600/20 blur-[80px]"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="max-w-xl">
+                <h2 class="text-4xl font-bold mb-4">Join the SkyClub</h2>
+                <p class="text-gray-300 text-lg">Earn miles every time you fly and unlock access to VIP Lounges worldwide.</p>
+            </div>
+            <div class="flex gap-4">
+                <button class="px-8 py-4 bg-white text-slate-900 font-bold rounded-2xl hover:bg-gray-200 transition-colors">Join Now</button>
+                <button class="px-8 py-4 glass text-white font-bold rounded-2xl hover:bg-white/10 transition-colors">Explore Benefits</button>
             </div>
         </div>
     </div>
