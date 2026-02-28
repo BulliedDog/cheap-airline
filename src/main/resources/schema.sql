@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS equipaggio_volo (
 );
 
 CREATE TABLE IF NOT EXISTS ricerche_log (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     origine_ricercata VARCHAR(255),
     destinazione_ricercata VARCHAR(255),
     data_ricerca TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -50,4 +50,5 @@ public class CittaRepository implements CittaDAO {
         String sql = "DELETE FROM citta WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
 }

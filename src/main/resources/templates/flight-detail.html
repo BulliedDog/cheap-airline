@@ -51,18 +51,10 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/5 pt-12">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-6 border-t border-white/5 pt-12">
                 <div class="glass p-6 rounded-3xl border-white/5">
                     <p class="text-gray-500 text-xs uppercase mb-2">Duration</p>
-                    <p class="text-xl font-bold italic">--h --m</p> </div>
-                <div class="glass p-6 rounded-3xl border-white/5">
-                    <p class="text-gray-500 text-xs uppercase mb-2">Aircraft ID</p>
-                    <p class="text-xl font-bold" th:text="'#' + ${volo.idAereo}"></p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5">
-                    <p class="text-gray-500 text-xs uppercase mb-2">Terminal</p>
-                    <p class="text-xl font-bold">T3 - International</p>
-                </div>
+                    <p th:text="${volo.getDurataFormattata()}" class="text-xl font-bold italic">--h --m</p> </div>
                 <div class="glass p-6 rounded-3xl border-white/5">
                     <p class="text-gray-500 text-xs uppercase mb-2">Baggage</p>
                     <p class="text-xl font-bold text-emerald-400 italic">Included</p>

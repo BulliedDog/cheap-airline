@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<head>
+    <title>SkyWings Admin - Nuovo Elemento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Forza il colore di sfondo scuro come nella dashboard */
+        body {
+            background: radial-gradient(circle at top left, #1e293b, #0f172a) !important;
+            background-color: #0f172a !important; /* Fallback */
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* Effetto Vetro (Glassmorphism) */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Input stile Admin */
+        .admin-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .admin-input:focus {
+            border-color: #3b82f6; /* Blu Tailwind */
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Fix per le scritte dentro le select su Windows/Chrome */
+        select.admin-input option {
+            background: #1e293b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<section class="container mx-auto px-4 py-12">
+    <div class="max-w-4xl mx-auto glass p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full"></div>
+
+        <div class="relative z-10">
+            <div class="mb-10">
+                <h2 class="text-4xl font-black text-white uppercase tracking-tighter">
+                    Aggiungi <span th:text="${tipo}" class="text-blue-500"></span>
+                </h2>
+                <p class="text-gray-400 mt-2">Inserisci i dettagli per registrare il nuovo record nel database.</p>
+            </div>
+
+            <form th:action="@{'/admin/save/' + ${tipo}}" method="POST" class="space-y-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <th:block th:if="${tipo == 'voli'}">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">CODICE VOLO</label>
+                            <input type="text" name="codiceVolo" placeholder="es. SK123" class="admin-input" required>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">PREZZO BASE (€)</label>
+                            <input type="number" name="prezzoBase" step="0.01" class="admin-input" required>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">CITTÀ DI PARTENZA</label>
+                            <select name="idCittaPartenza" class="admin-input" required>
+                                <option th:each="entry : ${nomiCitta}" th:value="${entry.key}" th:text="${entry.value}"></option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">CITTÀ DI ARRIVO</label>
+                            <select name="idCittaArrivo" class="admin-input" required>
+                                <option th:each="entry : ${nomiCitta}" th:value="${entry.key}" th:text="${entry.value}"></option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">ORARIO PARTENZA</label>
+                            <input type="datetime-local" name="orarioPartenza" class="admin-input" required>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">ORARIO ARRIVO</label>
+                            <input type="datetime-local" name="orarioArrivo" class="admin-input" required>
+                        </div>
+                        <div class="md:col-span-2 flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">AEREO ASSEGNATO</label>
+                            <select name="idAereo" class="admin-input" required>
+                                <option value="" disabled selected>Seleziona Aereo</option>
+                                <th:block th:if="${aerei != null}">
+                                    <option th:each="a : ${aerei}" th:value="${a.id}" th:text="${a.produttore + ' ' + a.modello}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </th:block>
+
+                    <th:block th:if="${tipo == 'utenti'}">
+                        <input type="text" name="nome" placeholder="Nome" class="admin-input" required>
+                        <input type="text" name="cognome" placeholder="Cognome" class="admin-input" required>
+                        <input type="email" name="email" placeholder="Email" class="admin-input" required>
+                        <input type="text" name="username" placeholder="Username" class="admin-input" required>
+                        <input type="password" name="password" placeholder="Password" class="admin-input" required>
+                        <select name="ruolo" class="admin-input">
+                            <option value="USER">User</option>
+                            <option value="STAFF">Staff/Equipaggio</option>
+                            <option value="ADMIN">Amministratore</option>
+                        </select>
+                    </th:block>
+
+                    <th:block th:if="${tipo == 'aerei'}">
+                        <input type="text" name="produttore" placeholder="Produttore (es. Boeing)" class="admin-input" required>
+                        <input type="text" name="modello" placeholder="Modello (es. 737-800)" class="admin-input" required>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">CAPACITÀ ECONOMY</label>
+                            <input type="number" name="capacitaEconomy" class="admin-input" required>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-bold text-gray-400 ml-2">CAPACITÀ BUSINESS</label>
+                            <input type="number" name="capacitaBusiness" class="admin-input" required>
+                        </div>
+                    </th:block>
+
+                    <th:block th:if="${tipo == 'citta'}">
+                        <input type="text" name="nome" placeholder="Nome Città" class="admin-input" required>
+                        <input type="text" name="nazione" placeholder="Nazione" class="admin-input" required>
+                        <input type="text" name="codiceIata" placeholder="Codice IATA (es. FCO)" class="admin-input" maxlength="3" required>
+                    </th:block>
+
+                    <th:block th:if="${tipo == 'equipaggio'}">
+                        <div class="md:col-span-2 space-y-4">
+                            <select name="idVolo" class="admin-input w-full" required>
+                                <option value="" disabled selected>Seleziona Volo</option>
+                                <option th:each="v : ${tuttiVoli}" th:value="${v.id}" th:text="${v.codiceVolo}"></option>
+                            </select>
+                            <select name="idUtente" class="admin-input w-full" required>
+                                <option value="" disabled selected>Seleziona Membro Staff</option>
+                                <option th:each="u : ${tuttiUtenti}" th:value="${u.id}" th:text="${u.nome + ' ' + u.cognome + ' (' + u.ruolo + ')'}"></option>
+                            </select>
+                            <input type="text" name="ruoloInVolo" placeholder="Ruolo in questo volo (es. Comandante, Hostess)" class="admin-input w-full" required>
+                        </div>
+                    </th:block>
+
+                </div>
+
+                <div class="pt-8 flex flex-col md:flex-row gap-4">
+                    <button type="submit" class="flex-1 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+                        CONFERMA E SALVA
+                    </button>
+                    <a th:href="@{/admin}" class="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl text-center transition-all border border-white/10">
+                        ANNULLA
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    .admin-input {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 1.25rem;
+        border-radius: 1rem;
+        color: white;
+        outline: none;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    .admin-input:focus {
+        border-color: #2563eb;
+        background: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+    select.admin-input option {
+        background: #1a1a1a;
+        color: white;
+    }
+</style>
+</body>
+</html>

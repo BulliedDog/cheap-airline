@@ -1,5 +1,6 @@
 package com.skywings.model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
@@ -62,4 +63,14 @@ public class Volo {
 
     public StatoVolo getStato() { return stato; }
     public void setStato(StatoVolo stato) { this.stato = stato; }
+
+    public String getDurataFormattata() {
+        if (orarioPartenza == null || orarioArrivo == null) return "N/A";
+
+        Duration duration = Duration.between(orarioPartenza, orarioArrivo);
+        long ore = duration.toHours();
+        long minuti = duration.toMinutesPart();
+
+        return ore + "h " + minuti + "m";
+    }
 }

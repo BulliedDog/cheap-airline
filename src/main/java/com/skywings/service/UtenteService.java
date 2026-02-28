@@ -5,6 +5,7 @@ import com.skywings.repository.interfaces.UtenteDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UtenteService {
@@ -37,5 +38,11 @@ public class UtenteService {
 
     public void deleteUtente(Long id) {
         utenteDAO.deleteById(id);
+    }
+
+    public List<Utente> getAllStaff() {
+        return utenteDAO.findAll().stream()
+                .filter(u -> !"USER".equals(u.getRuolo()))
+                .collect(Collectors.toList());
     }
 }

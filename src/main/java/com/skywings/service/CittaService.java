@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CittaService {
@@ -35,7 +36,11 @@ public class CittaService {
         cittaDAO.deleteById(id);
     }
 
-    //public Map<Long, String> getMappaNomiCitta() {
+    public Map<Long, String> getMappaNomiCitta() {
+        List<Citta> tutteLeCitta = cittaDAO.findAll();
+        // Trasformiamo la lista in mappa: {1: "Roma", 2: "Milano", ...}
+        return tutteLeCitta.stream()
+                .collect(Collectors.toMap(Citta::getId, Citta::getNome));
+    }
 
-    //}
 }

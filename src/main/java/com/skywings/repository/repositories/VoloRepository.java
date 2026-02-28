@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,4 +67,27 @@ public class VoloRepository implements VoloDAO {
         String sql = "DELETE FROM voli WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Volo> findVoliFiltered(Long originId, Long destId, LocalDate date) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT * FROM voli WHERE id_citta_partenza = ? AND id_citta_arrivo = ?"
+        );
+
+        List<Object> params = new ArrayList<>();
+        params.add(originId);
+        params.add(destId);
+
+        // Se la data è presente, aggiungiamo il filtro al volo
+        if (date != null) {
+            sql.append(" AND CAST(orario_partenza AS DATE) = ?");
+            params.add(java.sql.Date.valueOf(date));
+        }
+
+        sql.append(" ORDER BY orario_partenza ASC");
+
+        // Uso il voloMapper che hai già nel progetto (visto dai file caricati)
+        return jdbcTemplate.query(sql.toString(), voloMapper, params.toArray());
+    }
+
 }

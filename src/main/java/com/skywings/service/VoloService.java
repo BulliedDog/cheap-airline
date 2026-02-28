@@ -5,6 +5,7 @@ import com.skywings.repository.interfaces.VoloDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,8 +22,8 @@ public class VoloService {
         return voloDAO.findById(id).orElse(null);
     }
 
-    public void getVoliByCitta(String nome){
-
+    public List<Volo> getVoliFiltered(Long originId, Long destId, LocalDate date) {
+        return voloDAO.findVoliFiltered(originId, destId, date);
     }
 
     public void createVolo(Volo volo) {
