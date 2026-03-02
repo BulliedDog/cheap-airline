@@ -10,9 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.security.Principal;
 
 @Controller
 public class HomeController {
@@ -20,13 +17,11 @@ public class HomeController {
     private final GestoreSessione gestoreSessione;
     private final VoloService voloService;
     private final CittaService cittaService;
-    private final UtenteService utenteService;
 
     public HomeController(GestoreSessione gestoreSessione, VoloService voloService, CittaService cittaService, UtenteService utenteService) {
         this.gestoreSessione = gestoreSessione;
         this.voloService = voloService;
         this.cittaService = cittaService;
-        this.utenteService = utenteService;
     }
 
     @ModelAttribute
@@ -39,8 +34,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String index(Model model) {
-        // L'utente viene già aggiunto dal metodo sopra
+    public String index(HttpSession session, Model model) {
         model.addAttribute("voli", voloService.getAllVoli());
         model.addAttribute("nomiCitta", cittaService.getMappaNomiCitta());
         return "index";

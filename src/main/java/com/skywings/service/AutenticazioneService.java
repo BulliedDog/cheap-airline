@@ -11,7 +11,6 @@ import java.util.Optional;
 public class AutenticazioneService {
 
     private final UtenteDAO utenteDAO;
-    // L'encoder per gestire l'hash in modo sicuro
     private final BCryptPasswordEncoder passwordEncoder;
 
     public AutenticazioneService(UtenteDAO utenteRepository) {
@@ -19,10 +18,6 @@ public class AutenticazioneService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    /**
-     * Metodo per il LOGIN:
-     * Confronta lo username e verifica se l'hash della password combacia.
-     */
     public Utente login(String username, String passwordInserita) {
         // Cerchiamo per username come da tabella
         Optional<Utente> utenteDb = utenteDAO.findByUsername(username);
