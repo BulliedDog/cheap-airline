@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Controller
@@ -90,11 +91,11 @@ public class AdminController {
                     v.setCodiceVolo(params.get("codiceVolo"));
                     v.setIdCittaPartenza(Long.parseLong(params.get("idCittaPartenza")));
                     v.setIdCittaArrivo(Long.parseLong(params.get("idCittaArrivo")));
-                    v.setOrarioPartenza(LocalDateTime.parse(params.get("orarioPartenza")));
-                    v.setOrarioArrivo(LocalDateTime.parse(params.get("orarioArrivo")));
+                    v.setOrarioPartenza(LocalDateTime.parse(params.get("orarioPartenza"), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                    v.setOrarioArrivo(LocalDateTime.parse(params.get("orarioArrivo"), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     v.setPrezzoBase(BigDecimal.valueOf(Double.parseDouble(params.get("prezzoBase"))));
                     v.setIdAereo(Long.parseLong(params.get("idAereo")));
-                    v.setStato(Volo.StatoVolo.valueOf("SCHEDULED"));
+                    v.setStato(Volo.StatoVolo.PROGRAMMATO);
                     voloService.createVolo(v);
                     break;
                 case "aerei":
@@ -117,7 +118,8 @@ public class AdminController {
                     break;
             }
         } catch (Exception e) {
-            return "redirect:/admin?error=true&msg=" + e.getMessage();
+            e.printStackTrace();
+            return "redirect:/admin?error=true&msg=Errore_Database_Controlla_Log";
         }
         return "redirect:/admin?success=true";
     }

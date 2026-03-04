@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS utenti(
     id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL, -- NUOVO CAMPO PER IL LOGIN
-    email VARCHAR(100) UNIQUE NOT NULL,   -- Resta per contatti
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     cognome VARCHAR(100) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS citta (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     nazione VARCHAR(100) NOT NULL,
-    codice_iata VARCHAR(3) UNIQUE NOT NULL
+    codice_iata VARCHAR(10) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS aerei (
@@ -25,13 +25,13 @@ CREATE TABLE IF NOT EXISTS aerei (
 
 CREATE TABLE IF NOT EXISTS voli (
     id SERIAL PRIMARY KEY,
-    codice_volo VARCHAR(10) UNIQUE NOT NULL,
+    codice_volo VARCHAR(20) UNIQUE NOT NULL,
     id_citta_partenza INT NOT NULL REFERENCES citta(id) ON DELETE RESTRICT,
     id_citta_arrivo INT NOT NULL REFERENCES citta(id) ON DELETE RESTRICT,
     id_aereo INT NOT NULL REFERENCES aerei(id) ON DELETE RESTRICT,
     orario_partenza TIMESTAMP NOT NULL,
     orario_arrivo TIMESTAMP NOT NULL,
-    prezzo_base DECIMAL(10, 2) NOT NULL CHECK (prezzo_base >= 0),
+    prezzo_base DECIMAL(12, 2) NOT NULL CHECK (prezzo_base >= 0),
     stato VARCHAR(20) NOT NULL DEFAULT 'PROGRAMMATO' CHECK (stato IN ('PROGRAMMATO', 'IN_VOLO', 'ATTERRATO', 'CANCELLATO', 'IN_RITARDO')),
 
     CONSTRAINT chk_orari CHECK (orario_arrivo > orario_partenza),
@@ -41,13 +41,6 @@ CREATE TABLE IF NOT EXISTS voli (
 CREATE TABLE IF NOT EXISTS equipaggio_volo (
     id_volo INT NOT NULL REFERENCES voli(id) ON DELETE CASCADE,
     id_utente INT NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
-    note_assegnazione VARCHAR(255), -- Es: "Capo cabina", "Primo Ufficiale"
+    note_assegnazione VARCHAR(255),
     PRIMARY KEY (id_volo, id_utente)
-);
-
-CREATE TABLE IF NOT EXISTS ricerche_log (
-    id SERIAL PRIMARY KEY,
-    origine_ricercata VARCHAR(255),
-    destinazione_ricercata VARCHAR(255),
-    data_ricerca TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

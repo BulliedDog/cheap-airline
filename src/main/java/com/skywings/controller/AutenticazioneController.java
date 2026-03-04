@@ -19,14 +19,6 @@ public class AutenticazioneController {
         this.gestoreSessione = gestoreSessione;
     }
 
-    @ModelAttribute("utente")
-    public Utente aggiungiUtenteAlModello(HttpSession session) {
-        // Questo metodo verrà eseguito AUTOMATICAMENTE prima di ogni @GetMapping
-        // rendendo la variabile ${utente} sempre disponibile in Thymeleaf
-        // Così non perdo l'utente della sessione quando effettua la ricerca dei voli
-        return gestoreSessione.getUtenteCorrente(session);
-    }
-
     // Pagina di login/registrazione
     @GetMapping("/login")
     public String paginaLogin() {
@@ -61,11 +53,10 @@ public class AutenticazioneController {
                                HttpSession session,
                                Model model) {
 
-        // 1. Creiamo l'oggetto Utente con i dati del form
         Utente nuovoUtente = new Utente();
         nuovoUtente.setUsername(username);
         nuovoUtente.setEmail(email);
-        nuovoUtente.setPassword(password); // Se hai un encoder, usalo qui!
+        nuovoUtente.setPassword(password);
         nuovoUtente.setNome(nome);
         nuovoUtente.setCognome(cognome);
         nuovoUtente.setRuolo("CLIENTE");

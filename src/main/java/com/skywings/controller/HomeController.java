@@ -24,15 +24,6 @@ public class HomeController {
         this.cittaService = cittaService;
     }
 
-    @ModelAttribute
-    public void addAttributes(HttpSession session, Model model) {
-        Utente utente = gestoreSessione.getUtenteCorrente(session);
-        if (utente != null) {
-            model.addAttribute("utente", utente);
-            System.out.println("Utente in sessione: " + utente.getNome() + " Ruolo: " + utente.getRuolo());
-        }
-    }
-
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
         model.addAttribute("voli", voloService.getAllVoli());
