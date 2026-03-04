@@ -21,8 +21,16 @@
                     <h1 class="text-5xl font-black mt-4 italic" th:text="${volo.codiceVolo}"></h1>
                 </div>
                 <div class="text-right">
-                    <p class="text-gray-400 uppercase text-xs tracking-tighter">Base Fare Starting At</p>
-                    <p class="text-4xl font-bold text-emerald-400" th:text="${volo.prezzoBase} + ' €'"></p>
+                    <div th:if="${volo.prezzoBase != volo.prezzoCalcolato}" class="mb-1">
+                        <p class="text-gray-500 uppercase text-[10px] tracking-widest">Standard Fare</p>
+                        <p class="text-xl font-medium text-gray-500 line-through"
+                           th:text="${#numbers.formatDecimal(volo.prezzoBase, 1, 2)} + ' €'"></p>
+                    </div>
+
+                    <p class="text-gray-400 uppercase text-xs tracking-tighter"
+                       th:text="${volo.prezzoBase != volo.prezzoCalcolato} ? 'Special Offer Price' : 'Fare Starting At'"></p>
+                    <p class="text-5xl font-black text-emerald-400"
+                       th:text="${#numbers.formatDecimal(volo.prezzoCalcolato, 1, 2)} + ' €'"></p>
                 </div>
             </div>
 

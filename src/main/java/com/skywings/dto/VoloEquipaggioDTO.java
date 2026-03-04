@@ -1,4 +1,4 @@
-package com.skywings.model;
+package com.skywings.dto;
 
 /**
  * DTO per visualizzare i dettagli dell'equipaggio associato ai voli.

@@ -1,5 +1,6 @@
 package com.skywings.mapper;
 
+import com.skywings.dto.VoloDTO;
 import com.skywings.model.Volo;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -25,5 +26,24 @@ public class VoloMapper implements RowMapper<Volo> {
         // Lo stato è un Enum nel modello e VARCHAR nel DB
         volo.setStato(Volo.StatoVolo.valueOf(rs.getString("stato")));
         return volo;
+    }
+
+    public VoloDTO toDto(Volo volo) {
+        if (volo == null) return null;
+
+        VoloDTO dto = new VoloDTO();
+        dto.setId(volo.getId());
+        dto.setCodiceVolo(volo.getCodiceVolo());
+        dto.setIdCittaPartenza(volo.getIdCittaPartenza());
+        dto.setIdCittaArrivo(volo.getIdCittaArrivo());
+        dto.setIdAereo(volo.getIdAereo());
+        dto.setOrarioPartenza(volo.getOrarioPartenza());
+        dto.setOrarioArrivo(volo.getOrarioArrivo());
+        dto.setPrezzoBase(volo.getPrezzoBase());
+        dto.setStato(volo.getStato());
+
+        // Il prezzoCalcolato verrà settato nel Service tramite lo Strategy
+
+        return dto;
     }
 }

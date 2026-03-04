@@ -1,7 +1,7 @@
 package com.skywings.repository.interfaces;
 
 import com.skywings.model.VoloEquipaggio;
-import com.skywings.model.VoloEquipaggioDTO;
+import com.skywings.dto.VoloEquipaggioDTO;
 
 import java.util.List;
 

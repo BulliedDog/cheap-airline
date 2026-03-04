@@ -26,7 +26,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
-        model.addAttribute("voli", voloService.getAllVoli());
+        model.addAttribute("voli", voloService.getAllVoliConPrezzo());
         model.addAttribute("nomiCitta", cittaService.getMappaNomiCitta());
         return "index";
     }

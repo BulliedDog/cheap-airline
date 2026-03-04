@@ -1,10 +1,8 @@
 package com.skywings.repository.repositories;
 
-import com.skywings.mapper.VoloEquipaggioMapper;
 import com.skywings.model.VoloEquipaggio;
-import com.skywings.model.VoloEquipaggioDTO;
+import com.skywings.dto.VoloEquipaggioDTO;
 import com.skywings.repository.interfaces.VoloEquipaggioDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

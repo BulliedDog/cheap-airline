@@ -110,11 +110,9 @@
                                 <span class="font-bold text-white"
                                       th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaPartenza) : 'ID: ' + volo.idCittaPartenza}">
                                 </span>
-
                                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
-
                                 <span class="font-bold text-white"
                                       th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaArrivo) : 'ID: ' + volo.idCittaArrivo}">
                                 </span>
@@ -124,7 +122,17 @@
                         <td class="p-6" th:text="${#temporals.format(volo.orarioPartenza, 'dd/MM/yyyy HH:mm')}"></td>
                         <td class="p-6" th:text="${#temporals.format(volo.orarioArrivo, 'dd/MM/yyyy HH:mm')}"></td>
 
-                        <td class="p-6 font-semibold" th:text="${volo.prezzoBase} + ' €'"></td>
+                        <td class="p-6">
+                            <div class="flex flex-col">
+                                <span th:if="${volo.prezzoBase != volo.prezzoCalcolato}"
+                                      class="text-xs text-gray-500 line-through"
+                                      th:text="${#numbers.formatDecimal(volo.prezzoBase, 1, 2)} + ' €'">
+                                </span>
+                                <span class="font-bold text-emerald-400"
+                                      th:text="${#numbers.formatDecimal(volo.prezzoCalcolato, 1, 2)} + ' €'">
+                                </span>
+                            </div>
+                        </td>
 
                         <td class="p-6">
                             <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20"

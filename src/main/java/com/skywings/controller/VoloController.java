@@ -1,5 +1,6 @@
 package com.skywings.controller;
 
+import com.skywings.dto.VoloDTO;
 import com.skywings.model.Volo;
 import com.skywings.service.CittaService;
 import com.skywings.service.VoloService;
@@ -34,14 +35,14 @@ public class VoloController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
             Model model) {
 
-        List<Volo> filteredFlights = voloService.getVoliFiltered(originId, destinationId, departureDate);
+        List<VoloDTO> filteredFlights = voloService.getVoliFilteredConPrezzo(originId, destinationId, departureDate);
 
         model.addAttribute("voli", filteredFlights);
         model.addAttribute("nomiCitta", cittaService.getMappaNomiCitta());
 
         // Se l'utente ha inserito una data di ritorno, cerchiamo i voli inversi
         if (returnDate != null) {
-            List<Volo> returnFlights = voloService.getVoliFiltered(destinationId, originId, returnDate);
+            List<VoloDTO> returnFlights = voloService.getVoliFilteredConPrezzo(destinationId, originId, returnDate);
             model.addAttribute("voliRitorno", returnFlights);
         }
 
@@ -50,7 +51,7 @@ public class VoloController {
 
     @GetMapping("/flights/detail/{id}")
     public String flightDetail(@PathVariable Long id, Model model) {
-        Volo volo = voloService.getVoloById(id);
+        VoloDTO volo = voloService.getVoloByIdConPrezzo(id);
         if (volo == null) {
             return "redirect:/";
         }

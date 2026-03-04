@@ -1,7 +1,7 @@
 package com.skywings.service;
 
 import com.skywings.model.VoloEquipaggio;
-import com.skywings.model.VoloEquipaggioDTO;
+import com.skywings.dto.VoloEquipaggioDTO;
 import com.skywings.repository.interfaces.VoloEquipaggioDAO;
 import org.springframework.stereotype.Service;
 
