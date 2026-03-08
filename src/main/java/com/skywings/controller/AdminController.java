@@ -2,125 +2,176 @@ package com.skywings.controller;
 
 import com.skywings.model.*;
 import com.skywings.service.*;
-import com.skywings.util.GestoreSessione;
-import jakarta.servlet.http.HttpSession;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired private VoloService voloService;
-    @Autowired private UtenteService utenteService;
     @Autowired private AereoService aereoService;
     @Autowired private CittaService cittaService;
-    @Autowired private VoloEquipaggioService equipaggioService;
-    @Autowired private GestoreSessione gestoreSessione;
+    @Autowired private VoloService voloService;
+    @Autowired private UtenteService utenteService;
+    @Autowired private VoloEquipaggioService voloEquipaggioService;
+    @Autowired private PrenotazioneService prenotazioneService;
 
-    // DASHBOARD: Rotta /admin
-    @GetMapping({"", "/"})
-    public String dashboard(Model model, HttpSession session) {
-        Utente admin = gestoreSessione.getUtenteCorrente(session);
-        if (admin == null || !"ADMIN".equals(admin.getRuolo())) return "redirect:/login";
+    // --- MAPPE FUNZIONALI (Addio Switch!) ---
+    private Map<String, Supplier<List<?>>> listaProviders;
+    private Map<String, Supplier<Object>> nuovoProviders;
+    private Map<String, Function<Long, Object>> editProviders;
+    private Map<String, Consumer<Long>> deleteProviders;
+    private Map<String, String> titoli;
 
-        // Contatori per le card della dashboard
-        model.addAttribute("countVoli", voloService.getAllVoli().size());
+    @PostConstruct
+    public void init() {
+        // Mappa per ottenere le liste (Read)
+        listaProviders = Map.of(
+                "aerei", () -> aereoService.getAllAerei(),
+                "citta", () -> cittaService.getAllCitta(),
+                "voli", () -> voloService.getAllVoli(),
+                "utenti", () -> utenteService.getAllUtenti(),
+                "equipaggi", () -> voloEquipaggioService.getAllEquipaggio(),
+                "prenotazioni", () -> prenotazioneService.getAllPrenotazioni()
+        );
+
+        // Mappa per istanziare oggetti vuoti (New)
+        nuovoProviders = Map.of(
+                "aerei", Aereo::new,
+                "citta", Citta::new,
+                "voli", Volo::new,
+                "utenti", Utente::new,
+                "equipaggi", VoloEquipaggio::new,
+                "prenotazioni", Prenotazione::new
+        );
+
+        // Mappa per trovare l'oggetto dal DB (Edit)
+        editProviders = Map.of(
+                "aerei", id -> aereoService.getAereoById(id),
+                "citta", id -> cittaService.getCittaById(id),
+                "voli", id -> voloService.getVoloById(id),
+                "utenti", id -> utenteService.getUtenteById(id),
+                "prenotazioni", id -> prenotazioneService.getPrenotazioneById(id)
+        );
+
+        // Mappa per le eliminazioni (Delete)
+        deleteProviders = Map.of(
+                "aerei", id -> aereoService.deleteAereo(id),
+                "citta", id -> cittaService.deleteCitta(id),
+                "voli", id -> voloService.deleteVolo(id),
+                "utenti", id -> utenteService.deleteUtente(id),
+                "prenotazioni", id -> prenotazioneService.deletePrenotazioneById(id)
+        );
+
+        // Titoli delle tabelle
+        titoli = Map.of(
+                "aerei", "Gestione Flotta Aerei", "citta", "Gestione Città",
+                "voli", "Gestione Voli", "utenti", "Gestione Utenti",
+                "equipaggi", "Gestione Equipaggi", "prenotazioni", "Gestione Prenotazioni"
+        );
+    }
+
+    private void caricaConteggi(Model model) {
         model.addAttribute("countAerei", aereoService.getAllAerei().size());
-        model.addAttribute("countUtenti", utenteService.getAllUtenti().size());
         model.addAttribute("countCitta", cittaService.getAllCitta().size());
-        model.addAttribute("countEquipaggio", utenteService.getAllStaff().size());
+        model.addAttribute("countVoli", voloService.getAllVoli().size());
+        model.addAttribute("countUtenti", utenteService.getAllUtenti().size());
+        model.addAttribute("countEquipaggi", voloEquipaggioService.getAllEquipaggio().size());
+        model.addAttribute("countPrenotazioni", prenotazioneService.getAllPrenotazioni().size());
+    }
 
-        // CORRETTO: Riferimento diretto al file in templates/
+    // --- ROTTE DINAMICHE PULITE ---
+
+    @GetMapping({"", "/", "/dashboard"})
+    public String dashboard(Model model) {
+        caricaConteggi(model);
+        model.addAttribute("titolo", "Dashboard Amministratore");
         return "admin-dashboard";
     }
 
-    @GetMapping("/{tipo}/{azione}")
-    public String mostraForm(@PathVariable String tipo, Model model, HttpSession session) {
-        Utente admin = gestoreSessione.getUtenteCorrente(session);
-        if (admin == null || !"ADMIN".equals(admin.getRuolo())) return "redirect:/login";
+    @GetMapping("/{modelName}")
+    public String lista(@PathVariable String modelName, Model model) {
+        String key = modelName.toLowerCase();
+        if (!listaProviders.containsKey(key)) return "redirect:/admin/dashboard";
 
-        model.addAttribute("tipo", tipo);
-        model.addAttribute("utente", admin);
+        caricaConteggi(model);
+        model.addAttribute("modelName", key);
+        model.addAttribute("items", listaProviders.get(key).get()); // Esegue il metodo salvato nella mappa!
+        model.addAttribute("titoloTabella", titoli.get(key));
 
-        // Inizializziamo le liste per evitare il crash di Thymeleaf se il tipo non le richiede
-        switch (tipo) {
-            case "voli":
-                model.addAttribute("nomiCitta", cittaService.getMappaNomiCitta());
-                model.addAttribute("aerei", aereoService.getAllAerei());
-                break;
-            case "equipaggio":
-                model.addAttribute("tuttiVoli", voloService.getAllVoli());
-                model.addAttribute("tuttiUtenti", utenteService.getAllStaff());
-                break;
-            default:
-                // Per utenti, citta, aerei non servono liste esterne
-                break;
-        }
+        return "admin-dashboard";
+    }
+
+    @GetMapping("/{modelName}/new")
+    public String nuovo(@PathVariable String modelName, Model model) {
+        String key = modelName.toLowerCase();
+        if (!nuovoProviders.containsKey(key)) return "redirect:/admin/dashboard";
+
+        model.addAttribute("modelName", key);
+        model.addAttribute("azione", "Nuovo " + key);
+        model.addAttribute("entity", nuovoProviders.get(key).get());
 
         return "universal-form";
     }
 
-    // POST: Salvataggio (Invariato, punta ai Service corretti)
-    @PostMapping("/save/{tipo}")
-    public String salvaModello(@PathVariable String tipo, @RequestParam Map<String, String> params, HttpSession session) {
-        Utente admin = gestoreSessione.getUtenteCorrente(session);
-        if (admin == null || !"ADMIN".equals(admin.getRuolo())) return "redirect:/login";
+    @GetMapping("/{modelName}/edit/{id}")
+    public String modifica(@PathVariable String modelName, @PathVariable Long id, Model model) {
+        String key = modelName.toLowerCase();
+        if (!editProviders.containsKey(key)) return "redirect:/admin/dashboard";
 
-        try {
-            switch (tipo) {
-                case "utenti":
-                    Utente u = new Utente();
-                    u.setNome(params.get("nome"));
-                    u.setCognome(params.get("cognome"));
-                    u.setEmail(params.get("email"));
-                    u.setUsername(params.get("username"));
-                    u.setPassword(params.get("password"));
-                    u.setRuolo(params.get("ruolo"));
-                    utenteService.addUtente(u);
-                    break;
-                case "voli":
-                    Volo v = new Volo();
-                    v.setCodiceVolo(params.get("codiceVolo"));
-                    v.setIdCittaPartenza(Long.parseLong(params.get("idCittaPartenza")));
-                    v.setIdCittaArrivo(Long.parseLong(params.get("idCittaArrivo")));
-                    v.setOrarioPartenza(LocalDateTime.parse(params.get("orarioPartenza"), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                    v.setOrarioArrivo(LocalDateTime.parse(params.get("orarioArrivo"), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                    v.setPrezzoBase(BigDecimal.valueOf(Double.parseDouble(params.get("prezzoBase"))));
-                    v.setIdAereo(Long.parseLong(params.get("idAereo")));
-                    v.setStato(Volo.StatoVolo.PROGRAMMATO);
-                    voloService.createVolo(v);
-                    break;
-                case "aerei":
-                    Aereo a = new Aereo();
-                    a.setProduttore(params.get("produttore"));
-                    a.setModello(params.get("modello"));
-                    a.setCapacitaEconomy(Integer.parseInt(params.get("capacitaEconomy")));
-                    a.setCapacitaBusiness(Integer.parseInt(params.get("capacitaBusiness")));
-                    aereoService.addAereo(a);
-                    break;
-                case "citta":
-                    Citta c = new Citta();
-                    c.setNome(params.get("nome"));
-                    c.setNazione(params.get("nazione"));
-                    c.setCodiceIata(params.get("codiceIata"));
-                    cittaService.addCitta(c);
-                    break;
-                case "equipaggio":
-                    equipaggioService.assegnaMembro(Long.parseLong(params.get("idVolo")), Long.parseLong(params.get("idUtente")));
-                    break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "redirect:/admin?error=true&msg=Errore_Database_Controlla_Log";
-        }
-        return "redirect:/admin?success=true";
+        model.addAttribute("modelName", key);
+        model.addAttribute("azione", "Modifica " + key);
+        model.addAttribute("entity", editProviders.get(key).apply(id));
+
+        return "universal-form";
     }
+
+    @GetMapping("/{modelName}/delete/{id}")
+    public String elimina(@PathVariable String modelName, @PathVariable Long id) {
+        String key = modelName.toLowerCase();
+        if (deleteProviders.containsKey(key)) {
+            deleteProviders.get(key).accept(id);
+        }
+        return "redirect:/admin/" + key;
+    }
+
+    // --- GESTIONE ECCEZIONE CHIAVE COMPOSTA (EQUIPAGGI) ---
+
+    // ELIMINA EQUIPAGGIO (Chiave composta: voloId + utenteId)
+    @GetMapping("/equipaggi/delete/{voloId}/{utenteId}")
+    public String eliminaEquipaggio(@PathVariable Long voloId, @PathVariable Long utenteId) {
+        // Ora possiamo passare entrambi i parametri al metodo corretto!
+        voloEquipaggioService.rimuoviMembro(voloId, utenteId);
+        return "redirect:/admin/equipaggi";
+    }
+
+    // MODIFICA EQUIPAGGIO (Se hai bisogno di modificare l'assegnazione)
+    @GetMapping("/equipaggi/edit/{voloId}/{utenteId}")
+    public String modificaEquipaggio(@PathVariable Long voloId, @PathVariable Long utenteId, Model model) {
+        model.addAttribute("modelName", "equipaggi");
+        model.addAttribute("azione", "Modifica Equipaggio");
+        // Assicurati di avere questo metodo nel service:
+        model.addAttribute("entity", voloEquipaggioService.getAssegnazioneByIds(voloId, utenteId));
+        return "universal-form";
+    }
+
+    // --- SALVATAGGIO ---
+    // Rimangono separati per una ragione architetturale fondamentale: sfruttare il Data Binding di Spring (@ModelAttribute).
+    // Questo evita di dover parsare manualmente stringhe in Date o BigDecimal come facevi in passato con Map<String, String>[cite: 8].
+
+    @PostMapping("/aerei/save") public String saveAereo(@ModelAttribute Aereo aereo) { aereoService.addAereo(aereo); return "redirect:/admin/aerei"; }
+    @PostMapping("/citta/save") public String saveCitta(@ModelAttribute Citta citta) { cittaService.addCitta(citta); return "redirect:/admin/citta"; }
+    @PostMapping("/voli/save") public String saveVolo(@ModelAttribute Volo volo) { voloService.createVolo(volo); return "redirect:/admin/voli"; }
+    @PostMapping("/utenti/save") public String saveUtente(@ModelAttribute Utente utente) { utenteService.addUtente(utente); return "redirect:/admin/utenti"; }
+    @PostMapping("/equipaggi/save") public String saveEquipaggio(@ModelAttribute VoloEquipaggio eq) { voloEquipaggioService.addMembro(eq); return "redirect:/admin/equipaggi"; }
+    @PostMapping("/prenotazioni/save") public String savePrenotazione(@ModelAttribute Prenotazione pre) { prenotazioneService.addPrenotazione(pre); return "redirect:/admin/prenotazioni"; }
 }

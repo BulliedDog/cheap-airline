@@ -40,27 +40,30 @@ public class UtenteRepository implements UtenteDAO {
 
     @Override
     public Utente save(Utente utente) {
-        String sql = "INSERT INTO utenti (username, email, password, nome, cognome, ruolo) VALUES (?, ?, ?, ?, ?, ?)";
-
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            // Specifichiamo che vogliamo indietro la chiave generata (l'id SERIAL)
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, utente.getUsername());
-            ps.setString(2, utente.getEmail());
-            ps.setString(3, utente.getPassword());
-            ps.setString(4, utente.getNome());
-            ps.setString(5, utente.getCognome());
-            ps.setString(6, utente.getRuolo());
-            return ps;
-        }, keyHolder);
-
-        // Recuperiamo l'ID generato dal DB e lo iniettiamo nell'oggetto
-        if (keyHolder.getKey() != null) {
-            utente.setId(keyHolder.getKey().longValue());
+        if (utente.getId() != null && utente.getId() > 0) {
+            // È UN UPDATE (Modifica)
+            String sql = "UPDATE utenti SET username = ?, email = ?, password = ?, nome = ?, cognome = ?, ruolo = ? WHERE id = ?";
+            jdbcTemplate.update(sql,
+                    utente.getUsername(),
+                    utente.getEmail(),
+                    utente.getPassword(),
+                    utente.getNome(),
+                    utente.getCognome(),
+                    utente.getRuolo(),
+                    utente.getId()
+            );
+        } else {
+            // È UN INSERT (Nuovo record)
+            String sql = "INSERT INTO utenti (username, email, password, nome, cognome, ruolo) VALUES (?, ?, ?, ?, ?, ?)";
+            jdbcTemplate.update(sql,
+                    utente.getUsername(),
+                    utente.getEmail(),
+                    utente.getPassword(),
+                    utente.getNome(),
+                    utente.getCognome(),
+                    utente.getRuolo()
+            );
         }
-
         return utente;
     }
 

@@ -35,8 +35,13 @@ public class CittaRepository implements CittaDAO {
 
     @Override
     public void save(Citta citta) {
-        String sql = "INSERT INTO citta (nome, nazione, codice_iata) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, citta.getNome(), citta.getNazione(), citta.getCodiceIata());
+        if (citta.getId() != null && citta.getId() > 0) {
+            String sql = "UPDATE citta SET nome = ?, nazione = ?, codice_iata = ? WHERE id = ?";
+            jdbcTemplate.update(sql, citta.getNome(), citta.getNazione(), citta.getCodiceIata(), citta.getId());
+        } else {
+            String sql = "INSERT INTO citta (nome, nazione, codice_iata) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql, citta.getNome(), citta.getNazione(), citta.getCodiceIata());
+        }
     }
 
     @Override

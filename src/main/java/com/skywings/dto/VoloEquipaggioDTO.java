@@ -12,6 +12,7 @@ public class VoloEquipaggioDTO {
     private String nomeMembro;
     private String cognomeMembro;
     private String ruoloMembro;
+    private String noteAssegnazione;
 
     // Costruttore vuoto (necessario per il RowMapper)
     public VoloEquipaggioDTO() {}
@@ -84,4 +85,8 @@ public class VoloEquipaggioDTO {
     public String getCompositeId() {
         return idVolo + "-" + idUtente;
     }
+
+    public String getNoteAssegnazione() { return noteAssegnazione; }
+
+    public void setNoteAssegnazione(String noteAssegnazione) { this.noteAssegnazione = noteAssegnazione; }
 }

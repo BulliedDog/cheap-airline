@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS aerei (
     produttore VARCHAR(100) NOT NULL,
     capacita_economy INT NOT NULL CHECK (capacita_economy >= 0),
     capacita_business INT NOT NULL CHECK (capacita_business >= 0)
+    CONSTRAINT chk_capacita_positiva CHECK (capacita_economy >= 0 AND capacita_business >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS voli (
@@ -43,4 +44,19 @@ CREATE TABLE IF NOT EXISTS equipaggio_volo (
     id_utente INT NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
     note_assegnazione VARCHAR(255),
     PRIMARY KEY (id_volo, id_utente)
+);
+
+CREATE TABLE IF NOT EXISTS prenotazioni (
+    id SERIAL PRIMARY KEY,
+    volo_id BIGINT NOT NULL,
+    utente_id BIGINT NOT NULL,
+    nome_passeggero VARCHAR(100) NOT NULL,
+    cognome_passeggero VARCHAR(100) NOT NULL,
+    numero_documento VARCHAR(50) NOT NULL,
+    data_prenotazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    prezzo_acquistato DECIMAL(10, 2) NOT NULL,
+    posto VARCHAR(10),
+
+    CONSTRAINT fk_prenotazione_volo FOREIGN KEY (volo_id) REFERENCES voli(id) ON DELETE CASCADE,
+    CONSTRAINT fk_prenotazione_utente FOREIGN KEY (utente_id) REFERENCES utenti(id) ON DELETE CASCADE
 );

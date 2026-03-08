@@ -28,21 +28,27 @@ public class AereoRepository implements AereoDAO {
 
     @Override
     public Optional<Aereo> findById(Long id) {
-        String sql = "SELECT * FROM aereo WHERE id = ?";
+        String sql = "SELECT * FROM aerei WHERE id = ?";
         return jdbcTemplate.query(sql, aereoMapper, id).stream().findFirst();
     }
 
     @Override
     public void save(Aereo aereo) {
-        // Verifica che i nomi colonne corrispondano al tuo schema:
-        // modello, produttore, capacita_economy, capacita_business
-        String sql = "INSERT INTO aerei (modello, produttore, capacita_economy, capacita_business) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, aereo.getModello(), aereo.getProduttore(), aereo.getCapacitaEconomy(), aereo.getCapacitaBusiness());
+        // Se l'ID esiste (non è null ed è > 0), allora stiamo MODIFICANDO un record esistente
+        if (aereo.getId() != null && aereo.getId() > 0) {
+            String sql = "UPDATE aerei SET modello = ?, produttore = ?, capacita_economy = ?, capacita_business = ? WHERE id = ?";
+            jdbcTemplate.update(sql, aereo.getModello(), aereo.getProduttore(), aereo.getCapacitaEconomy(), aereo.getCapacitaBusiness(), aereo.getId());
+        }
+        // Altrimenti stiamo CREANDO un nuovo record
+        else {
+            String sql = "INSERT INTO aerei (modello, produttore, capacita_economy, capacita_business) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, aereo.getModello(), aereo.getProduttore(), aereo.getCapacitaEconomy(), aereo.getCapacitaBusiness());
+        }
     }
 
     @Override
     public void update(Aereo aereo) {
-        String sql = "UPDATE aereo SET modello = ?, produttore = ?, capacita_economy = ?, capacita_business = ? WHERE id = ?";
+        String sql = "UPDATE aerei SET modello = ?, produttore = ?, capacita_economy = ?, capacita_business = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 aereo.getModello(),
                 aereo.getProduttore(),
@@ -53,7 +59,7 @@ public class AereoRepository implements AereoDAO {
 
     @Override
     public void deleteById(Long id) {
-        String sql = "DELETE FROM aereo WHERE id = ?";
+        String sql = "DELETE FROM aerei WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

@@ -39,23 +39,37 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
 
     @Override
     public List<VoloEquipaggio> findByVoloId(Long idVolo) {
-        return jdbcTemplate.query("SELECT * FROM volo_equipaggio WHERE id_volo = ?", equipaggioMapper, idVolo);
+        return jdbcTemplate.query("SELECT * FROM equipaggio_volo WHERE id_volo = ?", equipaggioMapper, idVolo);
     }
 
     @Override
     public void save(VoloEquipaggio ve) {
-        String sql = "INSERT INTO volo_equipaggio (id_volo, id_utente) VALUES (?, ?)";
-        jdbcTemplate.update(sql, ve.getIdVolo(), ve.getIdUtente());
+        // Controlliamo se questa assegnazione Volo-Utente esiste già
+        String checkSql = "SELECT COUNT(*) FROM equipaggio_volo WHERE id_volo = ? AND id_utente = ?";
+        Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, ve.getIdVolo(), ve.getIdUtente());
+
+        if (count != null && count > 0) {
+            // È UN UPDATE (Modifica)
+            // Se nella tua tabella hai un campo extra come 'note_assegnazione', fai l'update qui.
+            // Se hai SOLO le chiavi, l'update è superfluo perché le chiavi non cambiano,
+            // ma ecco il codice predisposto se lo usi:
+            String updateSql = "UPDATE equipaggio_volo SET note_assegnazione = ? WHERE id_volo = ? AND id_utente = ?";
+            jdbcTemplate.update(updateSql, ve.getNoteAssegnazione(), ve.getIdVolo(), ve.getIdUtente());
+        } else {
+            // È UN INSERT (Nuovo membro aggiunto all'equipaggio del volo)
+            String insertSql = "INSERT INTO equipaggio_volo (id_volo, id_utente, note_assegnazione) VALUES (?, ?, ?)";
+            jdbcTemplate.update(insertSql, ve.getIdVolo(), ve.getIdUtente(), ve.getNoteAssegnazione());
+        }
     }
 
     @Override
     public void delete(Long idVolo, Long idUtente) {
-        jdbcTemplate.update("DELETE FROM volo_equipaggio WHERE id_volo = ? AND id_utente = ?", idVolo, idUtente);
+        jdbcTemplate.update("DELETE FROM equipaggio_volo WHERE id_volo = ? AND id_utente = ?", idVolo, idUtente);
     }
 
     @Override
     public List<VoloEquipaggio> findByUtenteId(Long idUtente) {
-        String sql = "SELECT * FROM volo_equipaggio WHERE id_utente = ?";
+        String sql = "SELECT * FROM equipaggio_volo WHERE id_utente = ?";
         return jdbcTemplate.query(sql, equipaggioMapper, idUtente);
     }
 
@@ -78,4 +92,16 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
             return dto;
         });
     }
+
+    @Override
+    public VoloEquipaggio findByIds(Long idVolo, Long idUtente) {
+        String sql = "SELECT * FROM equipaggio_volo WHERE id_volo = ? AND id_utente = ?";
+
+        // Usiamo l'equipaggioMapper che hai già definito in alto
+        List<VoloEquipaggio> risultati = jdbcTemplate.query(sql, equipaggioMapper, idVolo, idUtente);
+
+        // Se la lista è vuota ritorna null, altrimenti il primo risultato
+        return risultati.isEmpty() ? null : risultati.get(0);
+    }
+
 }

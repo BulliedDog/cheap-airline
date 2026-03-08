@@ -27,8 +27,18 @@ public class Aereo {
     public void setProduttore(String produttore) { this.produttore = produttore; }
 
     public int getCapacitaEconomy() { return capacitaEconomy; }
-    public void setCapacitaEconomy(int capacitaEconomy) { this.capacitaEconomy = capacitaEconomy; }
+    public void setCapacitaEconomy(int capacitaEconomy) {
+        if (capacitaEconomy < 0) {
+            throw new IllegalArgumentException("Errore Invariante: La capacità Economy non può essere negativa.");
+        }
+        this.capacitaEconomy = capacitaEconomy;
+    }
 
     public int getCapacitaBusiness() { return capacitaBusiness; }
-    public void setCapacitaBusiness(int capacitaBusiness) { this.capacitaBusiness = capacitaBusiness; }
+    public void setCapacitaBusiness(int capacitaBusiness) {
+        if (capacitaBusiness < 0) {
+            throw new IllegalArgumentException("Errore Invariante: La capacità Business non può essere negativa.");
+        }
+        this.capacitaBusiness = capacitaBusiness;
+    }
 }
