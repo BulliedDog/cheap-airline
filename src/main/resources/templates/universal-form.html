@@ -16,6 +16,11 @@
 
                 <input th:if="${modelName != 'equipaggi'}" type="hidden" th:field="*{id}" />
 
+                <th:block th:if="${modelName == 'equipaggi' and oldVoloId != null}">
+                    <input type="hidden" name="oldVoloId" th:value="${oldVoloId}">
+                    <input type="hidden" name="oldUtenteId" th:value="${oldUtenteId}">
+                </th:block>
+
                 <th:block th:if="${modelName == 'aerei'}">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
@@ -48,7 +53,7 @@
                             <input type="text" th:field="*{nazione}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
                         </div>
                         <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Codice IATA (es. MXP, FCO)</label>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Codice IATA</label>
                             <input type="text" th:field="*{codiceIata}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white uppercase" maxlength="3" required>
                         </div>
                     </div>
@@ -70,16 +75,22 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Orario Partenza</label>
-                            <input type="datetime-local" th:field="*{orarioPartenza}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Città Partenza</label>
+                            <select th:field="*{idCittaPartenza}" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
+                                <option th:each="citta : ${listaCitta}" th:value="${citta.id}" th:text="${citta.nome}"></option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Orario Arrivo</label>
-                            <input type="datetime-local" th:field="*{orarioArrivo}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Città Arrivo</label>
+                            <select th:field="*{idCittaArrivo}" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
+                                <option th:each="citta : ${listaCitta}" th:value="${citta.id}" th:text="${citta.nome}"></option>
+                            </select>
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Prezzo Base (€)</label>
-                            <input type="number" step="0.01" th:field="*{prezzoBase}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Aereo</label>
+                            <select th:field="*{idAereo}" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
+                                <option th:each="aereo : ${listaAerei}" th:value="${aereo.id}" th:text="${aereo.modello}"></option>
+                            </select>
                         </div>
                     </div>
                 </th:block>
@@ -99,16 +110,27 @@
                             <input type="text" th:field="*{username}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
                         </div>
                         <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Ruolo</label>
-                            <select th:field="*{ruolo}" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
-                                <option value="USER">Utente Base</option>
-                                <option value="ADMIN">Amministratore</option>
-                                <option value="CREW">Membro Equipaggio</option>
-                            </select>
-                        </div>
-                        <div class="col-span-2">
                             <label class="block text-gray-400 text-sm font-bold mb-2">Email</label>
                             <input type="email" th:field="*{email}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Password</label>
+                            <input type="password" name="password" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+                                   th:placeholder="${azione.contains('Modifica') ? '********' : 'Inserisci password'}">
+                            <p th:if="${azione.contains('Modifica')}" class="text-yellow-500 text-xs mt-1">
+                                Lascia vuoto per non modificare la password corrente.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Ruolo</label>
+                            <select th:field="*{ruolo}" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
+                                <option value="CLIENTE">Cliente</option>
+                                <option value="ADMIN">Amministratore</option>
+                                <option value="PILOTA">Pilota</option>
+                                <option value="HOSTESS">Hostess</option>
+                            </select>
                         </div>
                     </div>
                 </th:block>
@@ -116,35 +138,35 @@
                 <th:block th:if="${modelName == 'equipaggi'}">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">ID Volo</label>
-                            <input type="number" th:field="*{idVolo}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Volo</label>
+                            <select name="idVolo" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
+                                <option value="" disabled th:selected="${entity.idVolo == null}">-- Seleziona Volo --</option>
+                                <option th:each="v : ${listaVoli}"
+                                        th:value="${v.id}"
+                                        th:text="${v.codiceVolo}"
+                                        th:selected="${entity.idVolo != null and v.id.toString() == entity.idVolo.toString()}">
+                                </option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">ID Utente (Membro Crew)</label>
-                            <input type="number" th:field="*{idUtente}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Membro Equipaggio</label>
+                            <select name="idUtente" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
+                                <option value="" disabled th:selected="${entity.idUtente == null}">-- Seleziona Utente --</option>
+                                <option th:each="u : ${listaUtenti}"
+                                        th:value="${u.id}"
+                                        th:text="${u.nome + ' ' + u.cognome}"
+                                        th:selected="${entity.idUtente != null and u.id.toString() == entity.idUtente.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Note Assegnazione</label>
+                            <input type="text" th:field="*{noteAssegnazione}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white">
                         </div>
                     </div>
                 </th:block>
 
                 <th:block th:if="${modelName == 'prenotazioni'}">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Nome Passeggero</label>
-                            <input type="text" th:field="*{nomePasseggero}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Cognome Passeggero</label>
-                            <input type="text" th:field="*{cognomePasseggero}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Prezzo Acquistato (€)</label>
-                            <input type="number" step="0.01" th:field="*{prezzoAcquistato}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 text-sm font-bold mb-2">Posto (es. 14A)</label>
-                            <input type="text" th:field="*{posto}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
-                        </div>
-                    </div>
                 </th:block>
 
                 <div class="pt-6 border-t border-white/10 flex justify-end gap-4 mt-8">
@@ -156,8 +178,7 @@
                     </button>
                 </div>
 
-            </form>
-        </div>
+            </form> </div>
     </div>
 
 </th:block>

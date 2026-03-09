@@ -40,12 +40,17 @@ public class AutenticazioneService {
         String passwordInChiaro = utente.getPassword();
 
         // 2. Creiamo l'hash sicuro (Esempio: "mio123" -> "$2a$10$7R...")
-        String passwordHashata = passwordEncoder.encode(passwordInChiaro);
+        String passwordHashata = criptaPassword(passwordInChiaro);
 
         // 3. Settiamo la password criptata nell'oggetto
         utente.setPassword(passwordHashata);
 
         // 4. Salviamo l'utente nel database
         return utenteDAO.save(utente);
+    }
+
+    public String criptaPassword(String password){
+        String passwordHashata = passwordEncoder.encode(password);
+        return passwordHashata;
     }
 }

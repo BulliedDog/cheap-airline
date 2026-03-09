@@ -1,5 +1,6 @@
 package com.skywings.controller;
 
+import com.skywings.dto.VoloEquipaggioDTO;
 import com.skywings.model.*;
 import com.skywings.service.*;
 import jakarta.annotation.PostConstruct;
@@ -40,7 +41,7 @@ public class AdminController {
                 "citta", () -> cittaService.getAllCitta(),
                 "voli", () -> voloService.getAllVoli(),
                 "utenti", () -> utenteService.getAllUtenti(),
-                "equipaggi", () -> voloEquipaggioService.getAllEquipaggio(),
+                "equipaggi", () -> voloEquipaggioService.getAllDettagli(),
                 "prenotazioni", () -> prenotazioneService.getAllPrenotazioni()
         );
 
@@ -108,6 +109,11 @@ public class AdminController {
         model.addAttribute("items", listaProviders.get(key).get()); // Esegue il metodo salvato nella mappa!
         model.addAttribute("titoloTabella", titoli.get(key));
 
+        if (key.equals("equipaggi") || key.equals("prenotazioni")) {
+            model.addAttribute("listaVoli", voloService.getAllVoli());
+            model.addAttribute("listaUtenti", utenteService.getMembriEquipaggio());
+        }
+
         return "admin-dashboard";
     }
 
@@ -119,6 +125,19 @@ public class AdminController {
         model.addAttribute("modelName", key);
         model.addAttribute("azione", "Nuovo " + key);
         model.addAttribute("entity", nuovoProviders.get(key).get());
+
+        if (modelName.equals("voli")) {
+            model.addAttribute("listaAerei", aereoService.getAllAerei()); // o aereoRepository.findAll()
+            model.addAttribute("listaCitta", cittaService.getAllCitta());
+        }
+        else if (modelName.equals("prenotazioni")) {
+            model.addAttribute("listaVoli", voloService.getAllVoli());
+            model.addAttribute("listaUtenti", utenteService.getAllUtenti());
+        }
+        else if (modelName.equals("equipaggi")) {
+            model.addAttribute("listaVoli", voloService.getAllVoli());
+            model.addAttribute("listaUtenti", utenteService.getMembriEquipaggio());
+        }
 
         return "universal-form";
     }
@@ -132,6 +151,19 @@ public class AdminController {
         model.addAttribute("azione", "Modifica " + key);
         model.addAttribute("entity", editProviders.get(key).apply(id));
 
+        if (modelName.equals("voli")) {
+            model.addAttribute("listaAerei", aereoService.getAllAerei()); // o aereoRepository.findAll()
+            model.addAttribute("listaCitta", cittaService.getAllCitta());
+        }
+        else if (modelName.equals("prenotazioni")) {
+            model.addAttribute("listaVoli", voloService.getAllVoli());
+            model.addAttribute("listaUtenti", utenteService.getAllUtenti());
+        }
+        else if (modelName.equals("equipaggi")) {
+            model.addAttribute("listaVoli", voloService.getAllVoli());
+            model.addAttribute("listaUtenti", utenteService.getMembriEquipaggio());
+        }
+
         return "universal-form";
     }
 
@@ -143,8 +175,6 @@ public class AdminController {
         }
         return "redirect:/admin/" + key;
     }
-
-    // --- GESTIONE ECCEZIONE CHIAVE COMPOSTA (EQUIPAGGI) ---
 
     // ELIMINA EQUIPAGGIO (Chiave composta: voloId + utenteId)
     @GetMapping("/equipaggi/delete/{voloId}/{utenteId}")
@@ -159,8 +189,19 @@ public class AdminController {
     public String modificaEquipaggio(@PathVariable Long voloId, @PathVariable Long utenteId, Model model) {
         model.addAttribute("modelName", "equipaggi");
         model.addAttribute("azione", "Modifica Equipaggio");
-        // Assicurati di avere questo metodo nel service:
-        model.addAttribute("entity", voloEquipaggioService.getAssegnazioneByIds(voloId, utenteId));
+
+        // Recupera l'assegnazione
+        VoloEquipaggioDTO assegnazione = voloEquipaggioService.getAssegnazioneByIds(voloId, utenteId);
+        model.addAttribute("entity", assegnazione);
+
+        // IMPORTANTISSIMO: Aggiungi le liste, altrimenti le tendine nel form saranno vuote!
+        model.addAttribute("listaVoli", voloService.getAllVoli());
+        model.addAttribute("listaUtenti", utenteService.getAllUtenti());
+
+        // Aggiungiamo questi due campi per "ricordare" la vecchia chiave composta durante il salvataggio
+        model.addAttribute("oldVoloId", voloId);
+        model.addAttribute("oldUtenteId", utenteId);
+
         return "universal-form";
     }
 
@@ -168,10 +209,41 @@ public class AdminController {
     // Rimangono separati per una ragione architetturale fondamentale: sfruttare il Data Binding di Spring (@ModelAttribute).
     // Questo evita di dover parsare manualmente stringhe in Date o BigDecimal come facevi in passato con Map<String, String>[cite: 8].
 
-    @PostMapping("/aerei/save") public String saveAereo(@ModelAttribute Aereo aereo) { aereoService.addAereo(aereo); return "redirect:/admin/aerei"; }
-    @PostMapping("/citta/save") public String saveCitta(@ModelAttribute Citta citta) { cittaService.addCitta(citta); return "redirect:/admin/citta"; }
-    @PostMapping("/voli/save") public String saveVolo(@ModelAttribute Volo volo) { voloService.createVolo(volo); return "redirect:/admin/voli"; }
-    @PostMapping("/utenti/save") public String saveUtente(@ModelAttribute Utente utente) { utenteService.addUtente(utente); return "redirect:/admin/utenti"; }
-    @PostMapping("/equipaggi/save") public String saveEquipaggio(@ModelAttribute VoloEquipaggio eq) { voloEquipaggioService.addMembro(eq); return "redirect:/admin/equipaggi"; }
-    @PostMapping("/prenotazioni/save") public String savePrenotazione(@ModelAttribute Prenotazione pre) { prenotazioneService.addPrenotazione(pre); return "redirect:/admin/prenotazioni"; }
+    @PostMapping("/aerei/save") public String saveAereo(@ModelAttribute("entity") Aereo aereo) { aereoService.addAereo(aereo); return "redirect:/admin/aerei"; }
+    @PostMapping("/citta/save") public String saveCitta(@ModelAttribute("entity") Citta citta) { cittaService.addCitta(citta); return "redirect:/admin/citta"; }
+    @PostMapping("/voli/save") public String saveVolo(@ModelAttribute("entity") Volo volo) { voloService.createVolo(volo); return "redirect:/admin/voli"; }
+    @PostMapping("/utenti/save") public String saveUtente(@ModelAttribute("entity") Utente utente) { utenteService.addUtente(utente); return "redirect:/admin/utenti"; }
+    @PostMapping("/equipaggi/save")
+    public String saveEquipaggio(
+            @ModelAttribute("entity") VoloEquipaggio eq,
+            @RequestParam(value = "oldVoloId", required = false) Long oldVoloId,
+            @RequestParam(value = "oldUtenteId", required = false) Long oldUtenteId) {
+
+        System.out.println("--- DEBUG SALVATAGGIO EQUIPAGGIO ---");
+        System.out.println("Dati ricevuti dal Form -> Volo: " + eq.getIdVolo() + ", Utente: " + eq.getIdUtente() + ", Note: " + eq.getNoteAssegnazione());
+        System.out.println("Vecchi ID (Modifica) -> oldVoloId: " + oldVoloId + ", oldUtenteId: " + oldUtenteId);
+
+        // Protezione NullPointer: Se per qualche motivo Spring non mappa gli ID, fermiamo tutto
+        if (eq.getIdVolo() == null || eq.getIdUtente() == null) {
+            System.out.println("ERRORE: Spring non ha mappato idVolo o idUtente. Controlla i nomi dei campi HTML/DTO/Entity!");
+            return "redirect:/admin/equipaggi?error=mapping";
+        }
+
+        if (oldVoloId != null && oldUtenteId != null) {
+            System.out.println("Operazione: MODIFICA. Rimuovo vecchia assegnazione (" + oldVoloId + ", " + oldUtenteId + ")");
+            // Rimuoviamo SEMPRE la vecchia assegnazione.
+            // Questo risolve i duplicati se l'utente è cambiato, e risolve l'impossibilità
+            // di fare update se modifichi solo le note.
+            voloEquipaggioService.rimuoviMembro(oldVoloId, oldUtenteId);
+        } else {
+            System.out.println("Operazione: NUOVO INSERIMENTO.");
+        }
+
+        System.out.println("Inserisco nuova assegnazione (" + eq.getIdVolo() + ", " + eq.getIdUtente() + ")");
+        // A questo punto, inseriamo il record pulito come se fosse nuovo
+        voloEquipaggioService.addMembro(eq);
+
+        return "redirect:/admin/equipaggi";
+    }
+    @PostMapping("/prenotazioni/save") public String savePrenotazione(@ModelAttribute("entity") Prenotazione pre) { prenotazioneService.addPrenotazione(pre); return "redirect:/admin/prenotazioni"; }
 }

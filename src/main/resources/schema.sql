@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS aerei (
     modello VARCHAR(100) NOT NULL,
     produttore VARCHAR(100) NOT NULL,
     capacita_economy INT NOT NULL CHECK (capacita_economy >= 0),
-    capacita_business INT NOT NULL CHECK (capacita_business >= 0)
+    capacita_business INT NOT NULL CHECK (capacita_business >= 0),
     CONSTRAINT chk_capacita_positiva CHECK (capacita_economy >= 0 AND capacita_business >= 0)
 );
 

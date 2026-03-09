@@ -37,8 +37,8 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
             // È UN UPDATE
             String sql = """
                 UPDATE prenotazioni 
-                SET id_volo = ?, id_utente = ?, nome_passeggero = ?, cognome_passeggero = ?, 
-                    posto = ?, classe = ?, prezzo_acquistato = ?,
+                SET volo_id = ?, utente_id = ?, nome_passeggero = ?, cognome_passeggero = ?, 
+                    numero_documento = ?, data_prenotazione = ?, prezzo_acquistato = ?, posto = ? 
                 WHERE id = ?
             """;
             jdbcTemplate.update(sql,
@@ -46,16 +46,17 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
                     prenotazione.getUtenteId(),
                     prenotazione.getNomePasseggero(),
                     prenotazione.getCognomePasseggero(),
-                    prenotazione.getPosto(),
-                    prenotazione.getClasse(),
+                    prenotazione.getNumeroDocumento(),
+                    prenotazione.getDataPrenotazione(),
                     prenotazione.getPrezzoAcquistato(),
+                    prenotazione.getPosto(),
                     prenotazione.getId()
             );
         } else {
             // È UN INSERT
             String sql = """
                 INSERT INTO prenotazioni 
-                (id_volo, id_utente, nome_passeggero, cognome_passeggero, posto, classe, prezzo_acquistato) 
+                (volo_id, utente_id, nome_passeggero, cognome_passeggero, numero_documento, data_prenotazione, prezzo_acquistato, posto) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
             jdbcTemplate.update(sql,
@@ -63,9 +64,10 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
                     prenotazione.getUtenteId(),
                     prenotazione.getNomePasseggero(),
                     prenotazione.getCognomePasseggero(),
-                    prenotazione.getPosto(),
-                    prenotazione.getClasse(),
-                    prenotazione.getPrezzoAcquistato()
+                    prenotazione.getNumeroDocumento(),
+                    prenotazione.getDataPrenotazione(),
+                    prenotazione.getPrezzoAcquistato(),
+                    prenotazione.getPosto()
             );
         }
     }

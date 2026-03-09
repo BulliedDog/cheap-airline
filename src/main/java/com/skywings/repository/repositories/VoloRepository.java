@@ -36,11 +36,34 @@ public class VoloRepository implements VoloDAO {
     @Override
     public void save(Volo volo) {
         if (volo.getId() != null && volo.getId() > 0) {
-            String sql = "UPDATE voli SET codice_volo = ?, stato = ?, orario_partenza = ?, orario_arrivo = ?, prezzo_base = ? WHERE id = ?";
-            jdbcTemplate.update(sql, volo.getCodiceVolo(), volo.getStato(), volo.getOrarioPartenza(), volo.getOrarioArrivo(), volo.getPrezzoBase(), volo.getId());
+            // UPDATE
+            String sql = "UPDATE voli SET codice_volo = ?, id_citta_partenza = ?, id_citta_arrivo = ?, id_aereo = ?, orario_partenza = ?, orario_arrivo = ?, prezzo_base = ?, stato = ? WHERE id = ?";
+
+            jdbcTemplate.update(sql,
+                    volo.getCodiceVolo(),
+                    volo.getIdCittaPartenza(),
+                    volo.getIdCittaArrivo(),
+                    volo.getIdAereo(),
+                    volo.getOrarioPartenza(),
+                    volo.getOrarioArrivo(),
+                    volo.getPrezzoBase(),
+                    volo.getStato() != null ? volo.getStato().name() : "PROGRAMMATO",
+                    volo.getId()
+            );
         } else {
-            String sql = "INSERT INTO voli (codice_volo, stato, orario_partenza, orario_arrivo, prezzo_base) VALUES (?, ?, ?, ?, ?)";
-            jdbcTemplate.update(sql, volo.getCodiceVolo(), volo.getStato(), volo.getOrarioPartenza(), volo.getOrarioArrivo(), volo.getPrezzoBase());
+            // INSERT
+            String sql = "INSERT INTO voli (codice_volo, id_citta_partenza, id_citta_arrivo, id_aereo, orario_partenza, orario_arrivo, prezzo_base, stato) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+            jdbcTemplate.update(sql,
+                    volo.getCodiceVolo(),
+                    volo.getIdCittaPartenza(),
+                    volo.getIdCittaArrivo(),
+                    volo.getIdAereo(),
+                    volo.getOrarioPartenza(),
+                    volo.getOrarioArrivo(),
+                    volo.getPrezzoBase(),
+                    volo.getStato() != null ? volo.getStato().name() : "PROGRAMMATO"
+            );
         }
     }
 

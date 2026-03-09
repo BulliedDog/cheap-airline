@@ -22,6 +22,7 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
         VoloEquipaggio ve = new VoloEquipaggio();
         ve.setIdVolo(rs.getLong("id_volo"));
         ve.setIdUtente(rs.getLong("id_utente"));
+        ve.setNoteAssegnazione(rs.getString("note_assegnazione"));
         return ve;
     };
 
@@ -32,7 +33,7 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
             VoloEquipaggio ve = new VoloEquipaggio();
             ve.setIdVolo(rs.getLong("id_volo"));
             ve.setIdUtente(rs.getLong("id_utente"));
-            // Se hai il campo nel modello: ve.setNote(rs.getString("note_assegnazione"));
+            ve.setNoteAssegnazione(rs.getString("note_assegnazione"));
             return ve;
         });
     }
@@ -75,7 +76,7 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
 
     public List<VoloEquipaggioDTO> findAllDettagli() {
         String sql = """
-        SELECT ev.id_volo, ev.id_utente, v.codice_volo, u.nome, u.cognome, u.ruolo 
+        SELECT ev.id_volo, ev.id_utente, ev.note_assegnazione, v.codice_volo, u.nome, u.cognome, u.ruolo 
         FROM equipaggio_volo ev
         JOIN voli v ON ev.id_volo = v.id
         JOIN utenti u ON ev.id_utente = u.id
@@ -85,6 +86,7 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
             VoloEquipaggioDTO dto = new VoloEquipaggioDTO();
             dto.setIdVolo(rs.getLong("id_volo"));
             dto.setIdUtente(rs.getLong("id_utente"));
+            dto.setNoteAssegnazione(rs.getString("note_assegnazione"));
             dto.setCodiceVolo(rs.getString("codice_volo"));
             dto.setNomeMembro(rs.getString("nome"));
             dto.setCognomeMembro(rs.getString("cognome"));
@@ -96,11 +98,7 @@ public class VoloEquipaggioRepository implements VoloEquipaggioDAO {
     @Override
     public VoloEquipaggio findByIds(Long idVolo, Long idUtente) {
         String sql = "SELECT * FROM equipaggio_volo WHERE id_volo = ? AND id_utente = ?";
-
-        // Usiamo l'equipaggioMapper che hai già definito in alto
         List<VoloEquipaggio> risultati = jdbcTemplate.query(sql, equipaggioMapper, idVolo, idUtente);
-
-        // Se la lista è vuota ritorna null, altrimenti il primo risultato
         return risultati.isEmpty() ? null : risultati.get(0);
     }
 

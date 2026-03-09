@@ -88,8 +88,8 @@
                         <th th:if="${modelName == 'utenti'}" class="p-4">Nome e Cognome</th>
                         <th th:if="${modelName == 'utenti'}" class="p-4">Email</th>
 
-                        <th th:if="${modelName == 'equipaggi'}" class="p-4">ID Volo</th>
-                        <th th:if="${modelName == 'equipaggi'}" class="p-4">ID Utente</th>
+                        <th th:if="${modelName == 'equipaggi'}" class="p-4">Codice Volo</th>
+                        <th th:if="${modelName == 'equipaggi'}" class="p-4">Membro Equipaggio</th>
 
                         <th th:if="${modelName == 'prenotazioni'}" class="p-4">Passeggero</th>
                         <th th:if="${modelName == 'prenotazioni'}" class="p-4">Prezzo</th>
@@ -127,8 +127,11 @@
                         </th:block>
 
                         <th:block th:if="${modelName == 'equipaggi'}">
-                            <td class="p-4 font-medium font-mono" th:text="${item.idVolo}"></td>
-                            <td class="p-4 font-medium font-mono" th:text="${item.idUtente}"></td>
+                            <td class="p-4 font-medium text-blue-400" th:text="${item.codiceVolo}"></td>
+                            <td class="p-4">
+                                <span th:text="${item.nomeMembro + ' ' + item.cognomeMembro}"></span>
+                                <span class="text-xs text-gray-400 ml-2" th:text="'(' + ${item.ruoloMembro} + ')'"></span>
+                            </td>
                         </th:block>
 
                         <th:block th:if="${modelName == 'prenotazioni'}">

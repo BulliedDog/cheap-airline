@@ -1,5 +1,7 @@
 package com.skywings.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -13,8 +15,12 @@ public class Volo {
     private Long idCittaArrivo;
     private Long idAereo;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime orarioPartenza;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime orarioArrivo;
+
     private BigDecimal prezzoBase;
     private StatoVolo stato;
 
