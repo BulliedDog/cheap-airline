@@ -196,7 +196,7 @@ public class AdminController {
 
         // IMPORTANTISSIMO: Aggiungi le liste, altrimenti le tendine nel form saranno vuote!
         model.addAttribute("listaVoli", voloService.getAllVoli());
-        model.addAttribute("listaUtenti", utenteService.getAllUtenti());
+        model.addAttribute("listaUtenti", utenteService.getMembriEquipaggio());
 
         // Aggiungiamo questi due campi per "ricordare" la vecchia chiave composta durante il salvataggio
         model.addAttribute("oldVoloId", voloId);
@@ -212,7 +212,17 @@ public class AdminController {
     @PostMapping("/aerei/save") public String saveAereo(@ModelAttribute("entity") Aereo aereo) { aereoService.addAereo(aereo); return "redirect:/admin/aerei"; }
     @PostMapping("/citta/save") public String saveCitta(@ModelAttribute("entity") Citta citta) { cittaService.addCitta(citta); return "redirect:/admin/citta"; }
     @PostMapping("/voli/save") public String saveVolo(@ModelAttribute("entity") Volo volo) { voloService.createVolo(volo); return "redirect:/admin/voli"; }
-    @PostMapping("/utenti/save") public String saveUtente(@ModelAttribute("entity") Utente utente) { utenteService.addUtente(utente); return "redirect:/admin/utenti"; }
+    @PostMapping("/utenti/save")
+    public String saveUtente(@ModelAttribute("entity") Utente utente) {
+        // Se la password è vuota o composta solo da spazi, la rendiamo null
+        // Questo aiuta il Service a capire che NON è stata toccata
+        if (utente.getPassword() != null && utente.getPassword().trim().isEmpty()) {
+            utente.setPassword(null);
+        }
+
+        utenteService.updateUtente(utente);
+        return "redirect:/admin/utenti";
+    }
     @PostMapping("/equipaggi/save")
     public String saveEquipaggio(
             @ModelAttribute("entity") VoloEquipaggio eq,

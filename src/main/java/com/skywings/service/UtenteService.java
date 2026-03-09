@@ -5,6 +5,7 @@ import com.skywings.repository.interfaces.UtenteDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,9 +36,34 @@ public class UtenteService {
         utenteDAO.save(utente);
     }
 
-    public void updateUtente(Utente utente) {
-        utente.setPassword(autenticazioneService.criptaPassword(utente.getPassword()));
-        utenteDAO.update(utente);
+    public void updateUtente(Utente utenteDalForm) {
+        // 1. Se l'ID è nullo, è un NUOVO utente: cripta e salva
+        if (utenteDalForm.getId() == null || utenteDalForm.getId() == 0) {
+            String hash = autenticazioneService.criptaPassword(utenteDalForm.getPassword());
+            utenteDalForm.setPassword(hash);
+            utenteDAO.save(utenteDalForm); // Inserimento
+            return;
+        }
+
+        // 2. Se l'ID esiste, è una MODIFICA: recupera l'originale
+        Optional<Utente> optional = utenteDAO.findById(utenteDalForm.getId());
+        if (optional.isPresent()) {
+            Utente utenteNelDb = optional.get();
+
+            // QUI STA LA LOGICA CHE CERCHI:
+            // Se il form ti ha inviato null (perché vuoto), ripristiniamo l'hash esistente
+            if (utenteDalForm.getPassword() == null) {
+                utenteDalForm.setPassword(utenteNelDb.getPassword());
+            } else {
+                // Se non è null, l'utente ha scritto una nuova password: criptala
+                utenteDalForm.setPassword(autenticazioneService.criptaPassword(utenteDalForm.getPassword()));
+            }
+
+            // 3. Esegui l'update solo ora
+            utenteDAO.update(utenteDalForm);
+        } else {
+            throw new RuntimeException("Utente non trovato");
+        }
     }
 
     public void deleteUtente(Long id) {
