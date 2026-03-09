@@ -75,6 +75,18 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Orario Partenza</label>
+                            <input type="datetime-local" th:field="*{orarioPartenza}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Orario Arrivo</label>
+                            <input type="datetime-local" th:field="*{orarioArrivo}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Prezzo Base (€)</label>
+                            <input type="number" step="0.01" th:field="*{prezzoBase}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div>
                             <label class="block text-gray-400 text-sm font-bold mb-2">Città Partenza</label>
                             <select th:field="*{idCittaPartenza}" class="w-full bg-gray-800 border border-white/10 rounded-xl p-3 text-white" required>
                                 <option th:each="citta : ${listaCitta}" th:value="${citta.id}" th:text="${citta.nome}"></option>
@@ -167,6 +179,50 @@
                 </th:block>
 
                 <th:block th:if="${modelName == 'prenotazioni'}">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Volo</label>
+                            <select th:field="*{voloId}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white">
+                                <option value="" class="bg-gray-800">Seleziona un volo...</option>
+                                <option th:each="volo : ${listaVoli}"
+                                        th:value="${volo.id}"
+                                        th:text="${volo.codiceVolo}"
+                                        class="bg-gray-800"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Cliente</label>
+                            <select th:field="*{utenteId}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white">
+                                <option value="" class="bg-gray-800">Seleziona un cliente...</option>
+                                <option th:each="utente : ${listaUtenti}"
+                                        th:value="${utente.id}"
+                                        th:text="${utente.username}"
+                                        class="bg-gray-800"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Nome Passeggero</label>
+                            <input type="text" th:field="*{nomePasseggero}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Cognome Passeggero</label>
+                            <input type="text" th:field="*{cognomePasseggero}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Numero Documento</label>
+                            <input type="text" th:field="*{numeroDocumento}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Prezzo Acquistato (€)</label>
+                            <input type="number" step="0.01" th:field="*{prezzoAcquistato}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Posto (es. 14A)</label>
+                            <input type="text" th:field="*{posto}" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" required>
+                        </div>
+                    </div>
                 </th:block>
 
                 <div class="pt-6 border-t border-white/10 flex justify-end gap-4 mt-8">
