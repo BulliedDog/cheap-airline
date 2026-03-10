@@ -105,15 +105,39 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a href="/" class="hover:text-blue-400 font-medium">Home</a>
 
+                <div th:if="${utente != null}" class="relative group" id="notif-wrapper">
+                    <button class="relative p-2 text-gray-400 hover:text-white transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span th:if="${notificheCount > 0}" th:text="${notificheCount}"
+                              class="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-1.5 rounded-full border border-slate-900"></span>
+                    </button>
+
+                    <div id="notif-popup" class="hidden absolute right-0 mt-3 w-80 glass rounded-2xl border border-white/10 shadow-2xl z-50 backdrop-blur-xl">
+                        <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                            <h3 class="font-bold text-white text-sm">Notifications</h3>
+                            <form th:if="${notificheCount > 0}" th:action="@{/notifiche/leggi-tutte}" method="POST">
+                                <button type="submit" class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Read All</button>
+                            </form>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto divide-y divide-white/5">
+                            <div th:if="${#lists.isEmpty(notifiche)}" class="p-8 text-center text-gray-500 text-sm">No new updates</div>
+                            <div th:each="n : ${notifiche}" class="p-4 hover:bg-white/5 transition">
+                                <p class="text-gray-200 text-xs" th:text="${n.messaggio}"></p>
+                                <span class="text-[9px] text-gray-500 mt-1 block" th:text="${#dates.format(n.data_creazione, 'MMM dd, HH:mm')}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex items-center space-x-4">
                     <a th:if="${utente == null}" href="/login" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg">Login</a>
                     <a th:if="${utente != null}" href="/logout" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg">Logout</a>
                 </div>
 
                 <div th:if="${utente?.ruolo == 'ADMIN'}" class="flex items-center space-x-4">
-                    <a href="/admin" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg">
-                        Administration
-                    </a>
+                    <a href="/admin" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg">Administration</a>
                 </div>
             </div>
         </div>
@@ -129,6 +153,21 @@
         <p>&copy; 2026 SkyWings Airlines. All rights reserved.</p>
     </div>
 </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapper = document.getElementById('notif-wrapper');
+        if (wrapper) {
+            wrapper.querySelector('button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('notif-popup').classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => {
+                document.getElementById('notif-popup').classList.add('hidden');
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

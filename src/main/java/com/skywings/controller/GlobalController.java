@@ -22,7 +22,7 @@ public class GlobalController {
         this.gestoreSessione = gestoreSessione;
     }
 
-    @ModelAttribute("utente") // Questo rende ${utente} disponibile ovunque
+    @ModelAttribute("utente")
     public Utente aggiungiUtenteAlModello(HttpSession session) {
         return gestoreSessione.getUtenteCorrente(session);
     }
