@@ -62,4 +62,11 @@ public class AereoRepository implements AereoDAO {
         String sql = "DELETE FROM aerei WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Aereo> getAereiCasualiLimit2() {
+        // Nota: usa RANDOM() se il tuo DB è PostgreSQL o SQLite
+        String sql = "SELECT * FROM aerei ORDER BY RANDOM() LIMIT 2";
+        return jdbcTemplate.query(sql, aereoMapper);
+    }
 }

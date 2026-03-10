@@ -56,4 +56,12 @@ public class CittaRepository implements CittaDAO {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public List<Citta> getCittaConVoliProgrammatiLimit4() {
+        String sql = "SELECT DISTINCT c.* " +
+                "FROM citta c " +
+                "JOIN voli v ON c.id = v.id_citta_arrivo " +
+                "LIMIT 4";
+        return jdbcTemplate.query(sql, cittaMapper);
+    }
 }

@@ -90,23 +90,32 @@ public class VoloRepository implements VoloDAO {
 
     @Override
     public List<Volo> findVoliFiltered(Long originId, Long destId, LocalDate date) {
-        StringBuilder sql = new StringBuilder(
-                "SELECT * FROM voli WHERE id_citta_partenza = ? AND id_citta_arrivo = ?"
-        );
-
+        // Partiamo con una condizione sempre vera, così possiamo aggiungere "AND" a cascata
+        StringBuilder sql = new StringBuilder("SELECT * FROM voli WHERE 1=1");
         List<Object> params = new ArrayList<>();
-        params.add(originId);
-        params.add(destId);
 
-        // Se la data è presente, aggiungiamo il filtro al volo
+        // Se c'è l'origine, aggiungiamo il filtro
+        if (originId != null) {
+            sql.append(" AND id_citta_partenza = ?");
+            params.add(originId);
+        }
+
+        // Se c'è la destinazione, aggiungiamo il filtro
+        if (destId != null) {
+            sql.append(" AND id_citta_arrivo = ?");
+            params.add(destId);
+        }
+
+        // Se c'è la data, aggiungiamo il filtro
         if (date != null) {
             sql.append(" AND CAST(orario_partenza AS DATE) = ?");
             params.add(java.sql.Date.valueOf(date));
         }
 
+        // Aggiungiamo l'ordinamento alla fine
         sql.append(" ORDER BY orario_partenza ASC");
 
-        // Uso il voloMapper che hai già nel progetto (visto dai file caricati)
+        // Eseguiamo la query con i parametri dinamici
         return jdbcTemplate.query(sql.toString(), voloMapper, params.toArray());
     }
 

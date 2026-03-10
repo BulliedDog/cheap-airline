@@ -43,4 +43,7 @@ public class CittaService {
                 .collect(Collectors.toMap(Citta::getId, Citta::getNome));
     }
 
+    public List<Citta> getCittaConVoliProgrammatiLimit4() {
+        return cittaDAO.getCittaConVoliProgrammatiLimit4();
+    }
 }

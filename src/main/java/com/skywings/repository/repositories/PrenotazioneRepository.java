@@ -86,7 +86,7 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
 
     @Override
     public List<Prenotazione> findAll() {
-        String sql = "SELECT * FROM prenotazioni ORDER BY id DESC"; // Le più recenti prima
+        String sql = "SELECT * FROM prenotazioni ORDER BY id DESC";
         return jdbcTemplate.query(sql, rowMapper);
     }
 

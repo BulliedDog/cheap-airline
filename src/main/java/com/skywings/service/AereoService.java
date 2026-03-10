@@ -32,4 +32,8 @@ public class AereoService {
     public void deleteAereo(Long id) {
         aereoDAO.deleteById(id);
     }
+
+    public List<Aereo> getAereiCasualiLimit2() {
+        return aereoDAO.getAereiCasualiLimit2();
+    }
 }

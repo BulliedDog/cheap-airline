@@ -4,7 +4,67 @@
 <body>
 <th:block th:fragment="content">
 
-    <div class="relative overflow-hidden rounded-3xl glass p-12 md:p-20 mb-12">
+    <div th:if="${utente != null}" class="fixed top-24 right-8 z-50">
+        <button id="notif-btn" onclick="toggleNotif()" class="relative p-3 glass rounded-full hover:bg-white/20 transition-all shadow-lg border border-white/10 group">
+            <svg class="w-6 h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-900 animate-pulse"></span>
+        </button>
+
+        <div id="notif-popup" class="hidden absolute right-0 mt-3 w-80 glass rounded-2xl border border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl">
+            <div class="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                <h3 class="font-bold text-white">Notifications</h3>
+                <span class="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full font-bold">2 New</span>
+            </div>
+            <div class="max-h-80 overflow-y-auto divide-y divide-white/5">
+
+                <div class="p-4 hover:bg-white/5 transition-colors cursor-pointer">
+                    <div class="flex gap-3">
+                        <div class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
+                        <div>
+                            <p class="text-blue-400 font-bold text-xs tracking-wider mb-1">FLIGHT UPDATE</p>
+                            <p class="text-gray-200 text-sm">Flight AZ123 to Tokyo is now marked as <strong>BOARDING</strong>.</p>
+                            <span class="text-[10px] text-gray-500 mt-2 block font-mono">Just now</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 hover:bg-white/5 transition-colors cursor-pointer">
+                    <div class="flex gap-3">
+                        <div class="mt-1 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
+                        <div>
+                            <p class="text-emerald-400 font-bold text-xs tracking-wider mb-1">BOOKING CONFIRMED</p>
+                            <p class="text-gray-200 text-sm">Your booking for Paris (Seat 12A) has been processed successfully.</p>
+                            <span class="text-[10px] text-gray-500 mt-2 block font-mono">2 hrs ago</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="p-3 bg-black/20 text-center border-t border-white/5 hover:bg-white/5 transition cursor-pointer">
+                <p class="text-xs text-gray-400 font-bold uppercase">Mark all as read</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleNotif() {
+            const popup = document.getElementById('notif-popup');
+            popup.classList.toggle('hidden');
+        }
+        // Chiudi cliccando fuori
+        document.addEventListener('click', function(event) {
+            const notifBtn = document.getElementById('notif-btn');
+            const notifPopup = document.getElementById('notif-popup');
+            if (notifBtn && notifPopup) {
+                if (!notifBtn.contains(event.target) && !notifPopup.contains(event.target)) {
+                    notifPopup.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+    <div class="relative overflow-hidden rounded-3xl glass p-12 md:p-20 mb-12 mt-4">
         <div class="absolute inset-0 opacity-10">
             <div class="absolute top-10 right-20 w-64 h-64 accent-gradient rounded-full blur-3xl"></div>
             <div class="absolute bottom-10 left-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
@@ -23,24 +83,21 @@
     <div class="glass rounded-2xl p-2 mb-12 shadow-2xl border border-white/10">
         <div class="flex border-b border-white/10 mb-6">
             <button class="px-8 py-4 text-blue-400 border-b-2 border-blue-400 font-semibold">Book a Flight</button>
-            <button class="px-8 py-4 text-gray-400 hover:text-white transition">Check-in</button>
-            <button class="px-8 py-4 text-gray-400 hover:text-white transition">Flight Status</button>
         </div>
         <div class="mx-auto px-4 py-4">
             <form action="/flights/search" method="POST" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] ml-1">Origin</label>
-                    <select name="originId" class="w-full bg-black/20 border border-white/10 text-sm text-white rounded-xl p-3 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all outline-none appearance-none cursor-pointer" required>
-                        <option value="" disabled selected>From where?</option>
+                    <select name="originId" class="w-full bg-black/20 border border-white/10 text-sm text-white rounded-xl p-3 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all outline-none appearance-none cursor-pointer">
+                        <option value="" selected>Anywhere</option>
                         <option th:each="entry : ${nomiCitta}" th:value="${entry.key}" th:text="${entry.value}"></option>
                     </select>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] ml-1">Destination</label>
-                    <select name="destinationId" class="w-full bg-black/20 border border-white/10 text-sm text-white rounded-xl p-3 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all outline-none appearance-none cursor-pointer" required>
-                        <option value="" disabled selected>To where?</option>
+                    <select name="destinationId" class="w-full bg-black/20 border border-white/10 text-sm text-white rounded-xl p-3 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all outline-none appearance-none cursor-pointer">
+                        <option value="" selected>Anywhere</option>
                         <option th:each="entry : ${nomiCitta}" th:value="${entry.key}" th:text="${entry.value}"></option>
                     </select>
                 </div>
@@ -67,215 +124,218 @@
             .color-scheme-dark::-webkit-calendar-picker-indicator {
                 filter: invert(1);
                 cursor: pointer;
-            }
-        </style>
-
-        <style>
-            /* Fix for date picker icon color in dark theme */
-            .color-scheme-dark::-webkit-calendar-picker-indicator {
-                filter: invert(1);
                 opacity: 0.5;
             }
         </style>
     </div>
 
     <div class="mb-12">
-        <h2 class="text-3xl font-bold mb-8 text-center">All Scheduled Flights</h2>
+        <div class="flex justify-center space-x-8 mb-8 border-b border-white/10">
+            <button id="tab-btn-voli" onclick="switchTab('voli')" class="px-6 py-4 text-xl font-bold border-b-2 border-blue-500 text-blue-400 transition-colors">
+                Scheduled Flights
+            </button>
+            <button th:if="${utente != null}" id="tab-btn-prenotazioni" onclick="switchTab('prenotazioni')" class="px-6 py-4 text-xl font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition-colors">
+                My Bookings
+            </button>
+        </div>
 
-        <div class="glass rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                    <tr class="bg-white/5 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
-                        <th class="p-6 font-semibold">Code</th>
-                        <th class="p-6 font-semibold">Route</th>
-                        <th class="p-6 font-semibold">Departure</th>
-                        <th class="p-6 font-semibold">Arrival</th>
-                        <th class="p-6 font-semibold">Price</th>
-                        <th class="p-6 font-semibold">Status</th>
-                    </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/10 text-gray-200">
-                    <tr th:each="volo : ${voli}" class="hover:bg-white/5 transition-colors">
-
-                        <td class="p-6 font-medium text-blue-400">
-                            <a th:href="@{/flights/detail/{id}(id=${volo.id})}"
-                               class="hover:underline hover:text-blue-300 transition-all font-bold tracking-wider">
-                                <span th:text="${volo.codiceVolo}"></span>
-                            </a>
-                        </td>
-
-                        <td class="p-6">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-bold text-white"
-                                      th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaPartenza) : 'ID: ' + volo.idCittaPartenza}">
-                                </span>
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                                <span class="font-bold text-white"
-                                      th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaArrivo) : 'ID: ' + volo.idCittaArrivo}">
-                                </span>
-                            </div>
-                        </td>
-
-                        <td class="p-6" th:text="${#temporals.format(volo.orarioPartenza, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td class="p-6" th:text="${#temporals.format(volo.orarioArrivo, 'dd/MM/yyyy HH:mm')}"></td>
-
-                        <td class="p-6">
-                            <div class="flex flex-col">
-                                <span th:if="${volo.prezzoBase != volo.prezzoCalcolato}"
-                                      class="text-xs text-gray-500 line-through"
-                                      th:text="${#numbers.formatDecimal(volo.prezzoBase, 1, 2)} + ' €'">
-                                </span>
-                                <span class="font-bold text-emerald-400"
-                                      th:text="${#numbers.formatDecimal(volo.prezzoCalcolato, 1, 2)} + ' €'">
-                                </span>
-                            </div>
-                        </td>
-
-                        <td class="p-6">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20"
-                                  th:text="${volo.stato}">
-                            </span>
-                        </td>
-                    </tr>
-
-                    <tr th:if="${#lists.isEmpty(voli)}">
-                        <td colspan="6" class="p-12 text-center text-gray-500">
-                            No flights scheduled at the moment.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <div id="tab-content-voli" class="block">
+            <div class="glass rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                        <tr class="bg-white/5 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
+                            <th class="p-6 font-semibold">Code</th>
+                            <th class="p-6 font-semibold">Route</th>
+                            <th class="p-6 font-semibold">Departure</th>
+                            <th class="p-6 font-semibold">Arrival</th>
+                            <th class="p-6 font-semibold">Price</th>
+                            <th class="p-6 font-semibold">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10 text-gray-200">
+                        <tr th:each="volo : ${voli}" class="hover:bg-white/5 transition-colors">
+                            <td class="p-6 font-medium text-blue-400">
+                                <a th:href="@{/flights/detail/{id}(id=${volo.id})}"
+                                   class="hover:underline hover:text-blue-300 transition-all font-bold tracking-wider">
+                                    <span th:text="${volo.codiceVolo}"></span>
+                                </a>
+                            </td>
+                            <td class="p-6">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-white" th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaPartenza) : 'ID: ' + volo.idCittaPartenza}"></span>
+                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                    <span class="font-bold text-white" th:text="${nomiCitta != null ? nomiCitta.get(volo.idCittaArrivo) : 'ID: ' + volo.idCittaArrivo}"></span>
+                                </div>
+                            </td>
+                            <td class="p-6" th:text="${#temporals.format(volo.orarioPartenza, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="p-6" th:text="${#temporals.format(volo.orarioArrivo, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="p-6">
+                                <div class="flex flex-col">
+                                    <span th:if="${volo.prezzoBase != volo.prezzoCalcolato}"
+                                          class="text-xs text-gray-500 line-through"
+                                          th:text="${#numbers.formatDecimal(volo.prezzoBase, 1, 2)} + ' €'"></span>
+                                    <span class="font-bold text-emerald-400"
+                                          th:text="${#numbers.formatDecimal(volo.prezzoCalcolato, 1, 2)} + ' €'"></span>
+                                </div>
+                            </td>
+                            <td class="p-6">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20" th:text="${volo.stato}"></span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(voli)}">
+                            <td colspan="6" class="p-12 text-center text-gray-500">No flights scheduled at the moment.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        <div id="tab-content-prenotazioni" class="hidden" th:if="${utente != null}">
+            <div class="glass rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                        <tr class="bg-white/5 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
+                            <th class="p-6 font-semibold">Code</th>
+                            <th class="p-6 font-semibold">Route</th>
+                            <th class="p-6 font-semibold">Booking Date</th>
+                            <th class="p-6 font-semibold">Seat</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10 text-gray-200">
+                        <tr th:each="p : ${miePrenotazioni}" class="hover:bg-white/5 transition-colors">
+                            <th:block th:each="v : ${voli}" th:if="${v.id == p.voloId}">
+                                <td class="p-6 font-medium text-blue-400">
+                                    <a th:href="@{/flights/detail/{id}(id=${v.id})}" class="hover:underline hover:text-blue-300 transition-all font-bold tracking-wider">
+                                        <span th:text="${v.codiceVolo}"></span>
+                                    </a>
+                                </td>
+                                <td class="p-6">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-bold text-white" th:text="${nomiCitta != null ? nomiCitta.get(v.idCittaPartenza) : 'ID: ' + v.idCittaPartenza}"></span>
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                        <span class="font-bold text-white" th:text="${nomiCitta != null ? nomiCitta.get(v.idCittaArrivo) : 'ID: ' + v.idCittaArrivo}"></span>
+                                    </div>
+                                </td>
+                            </th:block>
+                            <td class="p-6" th:text="${#temporals.format(p.dataPrenotazione, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="p-6">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-emerald-500/30 text-emerald-400" th:text="${p.posto}"></span>
+                            </td>
+                        </tr>
+                        <tr th:if="${miePrenotazioni == null or #lists.isEmpty(miePrenotazioni)}">
+                            <td colspan="4" class="p-12 text-center text-gray-500">You have no bookings at the moment.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function switchTab(tabId) {
+                const voliBtn = document.getElementById('tab-btn-voli');
+                const prenBtn = document.getElementById('tab-btn-prenotazioni');
+                const voliContent = document.getElementById('tab-content-voli');
+                const prenContent = document.getElementById('tab-content-prenotazioni');
+
+                if (tabId === 'voli') {
+                    voliContent.classList.remove('hidden');
+                    voliContent.classList.add('block');
+                    if (prenContent) { prenContent.classList.remove('block'); prenContent.classList.add('hidden'); }
+                    voliBtn.classList.add('border-blue-500', 'text-blue-400'); voliBtn.classList.remove('border-transparent', 'text-gray-400');
+                    if (prenBtn) { prenBtn.classList.add('border-transparent', 'text-gray-400'); prenBtn.classList.remove('border-blue-500', 'text-blue-400'); }
+                } else if (tabId === 'prenotazioni') {
+                    if (prenContent) { prenContent.classList.remove('hidden'); prenContent.classList.add('block'); }
+                    voliContent.classList.remove('block'); voliContent.classList.add('hidden');
+                    if (prenBtn) { prenBtn.classList.add('border-blue-500', 'text-blue-400'); prenBtn.classList.remove('border-transparent', 'text-gray-400'); }
+                    voliBtn.classList.add('border-transparent', 'text-gray-400'); voliBtn.classList.remove('border-blue-500', 'text-blue-400');
+                }
+            }
+        </script>
     </div>
 
-    <div class="mb-20">
+    <div class="mb-20" th:if="${cittaCasuali != null and !#lists.isEmpty(cittaCasuali)}">
         <div class="flex justify-between items-end mb-10">
             <div>
                 <h2 class="text-4xl font-bold">Explore the World</h2>
-                <p class="text-gray-400 mt-2">Most loved destinations by SkyWings passengers</p>
+                <p class="text-gray-400 mt-2">Active destinations with scheduled flights</p>
             </div>
-            <a href="#" class="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-2">
-                View all <span class="text-xl">→</span>
-            </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-blue-500/20 shadow-xl">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800');"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
-                <div class="absolute bottom-0 p-6 w-full">
-                    <span class="px-3 py-1 bg-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Asia</span>
-                    <h4 class="text-2xl font-bold">Tokyo</h4>
-                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €599</p>
-                </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6"
+             th:with="urls=${ {'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800',
+                              'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800',
+                              'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=800',
+                              'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=800'} }">
 
-            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-purple-500/20 shadow-xl">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800');"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
-                <div class="absolute bottom-0 p-6 w-full">
-                    <span class="px-3 py-1 bg-purple-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Europe</span>
-                    <h4 class="text-2xl font-bold">Paris</h4>
-                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €49</p>
-                </div>
-            </div>
+            <form action="/flights/search" method="POST" th:each="citta, iterStat : ${cittaCasuali}" class="group block h-80 relative">
 
-            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-indigo-500/20 shadow-xl">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=800');"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
-                <div class="absolute bottom-0 p-6 w-full">
-                    <span class="px-3 py-1 bg-indigo-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">America</span>
-                    <h4 class="text-2xl font-bold">New York</h4>
-                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €420</p>
-                </div>
-            </div>
+                <input type="hidden" name="destinationId" th:value="${citta.id}">
 
-            <div class="group relative overflow-hidden rounded-3xl glass h-80 transition-all duration-500 hover:-translate-y-2 hover:shadow-emerald-500/20 shadow-xl">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=800');"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
-                <div class="absolute bottom-0 p-6 w-full">
-                    <span class="px-3 py-1 bg-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Relax</span>
-                    <h4 class="text-2xl font-bold">Maldives</h4>
-                    <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Starting from €750</p>
-                </div>
-            </div>
+                <button type="submit" class="w-full h-full text-left relative overflow-hidden rounded-3xl glass transition-all duration-500 hover:-translate-y-2 hover:shadow-blue-500/20 shadow-xl cursor-pointer">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                         th:style="'background-image: url(' + ${urls[iterStat.index % 4]} + ');'">
+                    </div>
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    <div class="absolute bottom-0 p-6 w-full relative z-10">
+                        <span class="px-3 py-1 bg-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2 inline-block">Fly To</span>
+                        <h4 class="text-2xl font-bold text-white" th:text="${citta.nome}">Nome Città</h4>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Click to view flights</p>
+                    </div>
+                </button>
+            </form>
         </div>
     </div>
 
-    <div class="mb-20">
+    <div class="mb-20" th:if="${aereiCasuali != null and !#lists.isEmpty(aereiCasuali)}">
         <h2 class="text-3xl font-bold mb-10 text-center uppercase tracking-tighter">Giants of the Sky</h2>
 
-        <div class="flex space-x-6 overflow-x-auto pb-8 snap-x no-scrollbar">
-            <div class="snap-center shrink-0 w-[300px] md:w-[600px] glass rounded-3xl overflow-hidden border border-white/10">
+        <div class="flex space-x-6 overflow-x-auto pb-8 snap-x no-scrollbar"
+             th:with="planeUrls=${ {'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200',
+                                    'https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=1200'} }">
+
+            <div th:each="aereo, iterStat : ${aereiCasuali}" class="snap-center shrink-0 w-[300px] md:w-[600px] glass rounded-3xl overflow-hidden border border-white/10">
                 <div class="h-48 md:h-64 bg-slate-800 relative overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1544015759-44059074d32a?q=80&w=1200" class="w-full h-full object-cover opacity-60">
+
+                    <img th:src="${planeUrls[iterStat.index % 2]}" class="w-full h-full object-cover opacity-60">
+
                     <div class="absolute top-6 left-6">
-                        <h4 class="text-3xl font-black italic">BOEING 787</h4>
-                        <p class="text-blue-400 font-mono tracking-widest text-xs">DREAMLINER</p>
+                        <h4 class="text-3xl font-black italic uppercase" th:text="${aereo.produttore}">Produttore</h4>
+                        <p class="text-blue-400 font-mono tracking-widest text-lg font-bold" th:text="${aereo.modello}">Modello</p>
                     </div>
                 </div>
                 <div class="p-6 grid grid-cols-3 gap-4 text-center">
                     <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
                         <p class="text-[10px] text-gray-500 uppercase">Capacity</p>
-                        <p class="font-bold">290 People</p>
+                        <p class="font-bold" th:text="${(aereo.capacitaEconomy + aereo.capacitaBusiness) + ' People'}">0 People</p>
                     </div>
                     <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase">Range</p>
-                        <p class="font-bold font-mono text-sm">14,140km</p>
+                        <p class="text-[10px] text-gray-500 uppercase">Status</p>
+                        <p class="font-bold text-emerald-400">Active</p>
                     </div>
                     <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
                         <p class="text-[10px] text-gray-500 uppercase">Comfort</p>
-                        <p class="font-bold text-sm">Ultra-Silent</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="snap-center shrink-0 w-[300px] md:w-[600px] glass rounded-3xl overflow-hidden border border-white/10">
-                <div class="h-48 md:h-64 bg-slate-800 relative overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1559348349-86f1f65817fe?q=80&w=1200" class="w-full h-full object-cover opacity-60">
-                    <div class="absolute top-6 left-6">
-                        <h4 class="text-3xl font-black italic text-purple-400">AIRBUS A350</h4>
-                        <p class="text-white font-mono tracking-widest text-xs">XWB - EXTRA WIDE BODY</p>
-                    </div>
-                </div>
-                <div class="p-6 grid grid-cols-3 gap-4 text-center">
-                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase">Business</p>
-                        <p class="font-bold">32 Suites</p>
-                    </div>
-                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase">WiFi</p>
-                        <p class="font-bold">High Speed</p>
-                    </div>
-                    <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase">Eco</p>
-                        <p class="font-bold font-mono text-sm">-25% CO2</p>
+                        <p class="font-bold text-sm">SkyWings Class</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
-        <div class="glass p-6 rounded-3xl text-center border-white/5">
-            <p class="text-blue-400 text-xs font-mono uppercase mb-1">Destinations</p>
-            <h4 class="text-3xl font-black">120+</h4>
-        </div>
-        <div class="glass p-6 rounded-3xl text-center border-white/5">
-            <p class="text-purple-400 text-xs font-mono uppercase mb-1">Daily Flights</p>
-            <h4 class="text-3xl font-black">450</h4>
-        </div>
+    <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-20">
         <div class="glass p-6 rounded-3xl text-center border-white/5">
             <p class="text-emerald-400 text-xs font-mono uppercase mb-1">Safety Rating</p>
             <h4 class="text-3xl font-black italic">5/5</h4>
         </div>
         <div class="glass p-6 rounded-3xl text-center border-white/5">
-            <p class="text-amber-400 text-xs font-mono uppercase mb-1">Active Fleet</p>
-            <h4 class="text-3xl font-black">84</h4>
+            <p class="text-amber-400 text-xs font-mono uppercase mb-1">CO2 Emissions</p>
+            <h4 class="text-3xl font-black">Top 1 in cutting emissions</h4>
         </div>
     </div>
 
@@ -297,15 +357,6 @@
 
     <div class="mb-12">
         <h2 class="text-3xl font-bold mb-8 text-center">The SkyWings Experience</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass rounded-2xl p-8 hover:bg-white/5 transition-colors">
-                <div class="text-blue-400 mb-4">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <h3 class="text-xl font-bold mb-2">Zero Hidden Fees</h3>
-                <p class="text-gray-400 text-sm">What you see is what you pay. No surprises at checkout.</p>
-            </div>
-        </div>
     </div>
 
 </th:block>

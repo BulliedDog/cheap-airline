@@ -10,4 +10,5 @@ public interface AereoDAO {
     void save(Aereo aereo);
     void update(Aereo aereo);
     void deleteById(Long id);
+    List<Aereo> getAereiCasualiLimit2();
 }

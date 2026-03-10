@@ -10,4 +10,5 @@ public interface CittaDAO {
     void save(Citta citta);
     void update(Citta citta);
     void deleteById(Long id);
+    List<Citta> getCittaConVoliProgrammatiLimit4();
 }
