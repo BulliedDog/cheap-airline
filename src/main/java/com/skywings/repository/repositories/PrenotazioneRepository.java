@@ -34,13 +34,10 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
     @Override
     public void save(Prenotazione prenotazione) {
         if (prenotazione.getId() != null && prenotazione.getId() > 0) {
-            // È UN UPDATE
-            String sql = """
-                UPDATE prenotazioni 
-                SET volo_id = ?, utente_id = ?, nome_passeggero = ?, cognome_passeggero = ?, 
-                    numero_documento = ?, data_prenotazione = ?, prezzo_acquistato = ?, posto = ? 
-                WHERE id = ?
-            """;
+            // UPDATE
+            String sql = "UPDATE prenotazioni SET volo_id=?, utente_id=?, nome_passeggero=?, " +
+                    "cognome_passeggero=?, numero_documento=?, data_prenotazione=?, " +
+                    "prezzo_acquistato=?, posto=?, classe=? WHERE id=?";
             jdbcTemplate.update(sql,
                     prenotazione.getVoloId(),
                     prenotazione.getUtenteId(),
@@ -50,15 +47,14 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
                     prenotazione.getDataPrenotazione(),
                     prenotazione.getPrezzoAcquistato(),
                     prenotazione.getPosto(),
+                    prenotazione.getClasse(),
                     prenotazione.getId()
             );
         } else {
-            // È UN INSERT
-            String sql = """
-                INSERT INTO prenotazioni 
-                (volo_id, utente_id, nome_passeggero, cognome_passeggero, numero_documento, data_prenotazione, prezzo_acquistato, posto) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+            // INSERT
+            String sql = "INSERT INTO prenotazioni (volo_id, utente_id, nome_passeggero, " +
+                    "cognome_passeggero, numero_documento, data_prenotazione, " +
+                    "prezzo_acquistato, posto, classe) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(sql,
                     prenotazione.getVoloId(),
                     prenotazione.getUtenteId(),
@@ -67,7 +63,8 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
                     prenotazione.getNumeroDocumento(),
                     prenotazione.getDataPrenotazione(),
                     prenotazione.getPrezzoAcquistato(),
-                    prenotazione.getPosto()
+                    prenotazione.getPosto(),
+                    prenotazione.getClasse()
             );
         }
     }
@@ -101,5 +98,12 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
     public void deleteById(Long id) {
         String sql = "DELETE FROM prenotazioni WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public int countPrenotazioniByVoloAndClasse(Long idVolo, String classe) {
+        String sql = "SELECT COUNT(*) FROM prenotazioni WHERE volo_id = ? AND classe = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, idVolo, classe);
+        return count != null ? count : 0;
     }
 }

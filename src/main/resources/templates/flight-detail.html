@@ -72,10 +72,66 @@
         </div>
     </div>
 
-    <div class="flex justify-center mb-24">
-        <button class="px-16 py-6 bg-white text-slate-900 rounded-3xl font-black text-2xl hover:bg-blue-400 hover:text-white transition-all transform hover:-translate-y-2 shadow-2xl shadow-white/10">
-            PROCEED TO SELECTION
-        </button>
+    <div class="mt-12">
+
+        <div th:if="${errore != null}" class="bg-red-500/20 border border-red-500 text-red-100 p-4 rounded-xl mb-6 font-semibold shadow-lg" th:text="${errore}"></div>
+        <div th:if="${successo != null}" class="bg-emerald-500/20 border border-emerald-500 text-emerald-100 p-4 rounded-xl mb-6 font-semibold shadow-lg" th:text="${successo}"></div>
+
+        <div class="flex justify-center mt-12">
+
+            <a th:if="${utente == null}" href="/login"
+               class="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl hover:scale-105 transition-all shadow-lg text-center">
+                Proceed with selection (Login Required)
+            </a>
+
+            <button th:if="${utente != null}" type="button"
+                    onclick="document.getElementById('bookingSection').classList.toggle('hidden')"
+                    class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-bold rounded-xl hover:scale-[1.02] transition-all shadow-lg shadow-emerald-500/20">
+                Proceed with selection
+            </button>
+        </div>
+
+        <div id="bookingSection" class="hidden mt-8 glass p-8 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
+            <h3 class="text-2xl font-bold mb-6 text-white relative z-10">Passenger Details</h3>
+
+            <form th:action="@{/prenotazioni/book}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                <input type="hidden" name="voloId" th:value="${volo.id}">
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">First Name</label>
+                    <input type="text" name="nomePasseggero" required class="bg-black/20 border border-white/10 text-white rounded-xl p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Last Name</label>
+                    <input type="text" name="cognomePasseggero" required class="bg-black/20 border border-white/10 text-white rounded-xl p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Class</label>
+                    <select name="classe" required class="bg-black/20 border border-white/10 text-white rounded-xl p-3 focus:border-purple-500 outline-none appearance-none cursor-pointer">
+                        <option value="Economy" class="text-black">Economy</option>
+                        <option value="Business" class="text-black">Business</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Seat (e.g. 12A)</label>
+                    <input type="text" name="posto" required placeholder="Choose your seat manually" class="bg-black/20 border border-white/10 text-white rounded-xl p-3 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Document Number</label>
+                    <input type="text" name="numeroDocumento" required placeholder="Passport or ID" class="bg-black/20 border border-white/10 text-white rounded-xl p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
+                </div>
+
+                <div class="md:col-span-2 mt-4">
+                    <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-colors uppercase tracking-widest text-sm shadow-lg">
+                        Confirm Booking
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
 </th:block>

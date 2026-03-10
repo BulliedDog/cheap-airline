@@ -9,6 +9,6 @@ public interface PrenotazioneDAO {
     List<Prenotazione> findByVoloId(Long voloId);
     List<Prenotazione> findAll();
     Prenotazione findById(Long id);
-
     void deleteById(Long id);
+    int countPrenotazioniByVoloAndClasse(Long idVolo, String classe);
 }

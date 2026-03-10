@@ -56,7 +56,17 @@ CREATE TABLE IF NOT EXISTS prenotazioni (
     data_prenotazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     prezzo_acquistato DECIMAL(10, 2) NOT NULL,
     posto VARCHAR(10),
+    classe VARCHAR(50),
 
     CONSTRAINT fk_prenotazione_volo FOREIGN KEY (volo_id) REFERENCES voli(id) ON DELETE CASCADE,
     CONSTRAINT fk_prenotazione_utente FOREIGN KEY (utente_id) REFERENCES utenti(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS notifiche (
+    id SERIAL PRIMARY KEY,
+    utente_id BIGINT NOT NULL,
+    messaggio TEXT NOT NULL,
+    data_creazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    letta BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (utente_id) REFERENCES utenti(id) ON DELETE CASCADE
 );

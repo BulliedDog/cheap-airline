@@ -19,6 +19,7 @@ public class PrenotazioneMapper {
         dto.setDataPrenotazione(entity.getDataPrenotazione());
         dto.setPrezzoAcquistato(entity.getPrezzoAcquistato());
         dto.setPosto(entity.getPosto());
+        dto.setClasse(entity.getClasse());
         return dto;
     }
 
@@ -34,6 +35,7 @@ public class PrenotazioneMapper {
         entity.setDataPrenotazione(dto.getDataPrenotazione());
         entity.setPrezzoAcquistato(dto.getPrezzoAcquistato());
         entity.setPosto(dto.getPosto());
+        entity.setClasse(dto.getClasse());
         return entity;
     }
 }

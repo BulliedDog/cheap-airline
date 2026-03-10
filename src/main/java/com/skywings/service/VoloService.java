@@ -3,11 +3,14 @@ package com.skywings.service;
 import com.skywings.dto.VoloDTO;
 import com.skywings.mapper.VoloMapper;
 import com.skywings.model.Volo;
+import com.skywings.observer.VoloStatoEvent;
 import com.skywings.repository.interfaces.VoloDAO;
 import com.skywings.strategy.TariffaStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,11 +30,19 @@ public class VoloService {
     @Qualifier("tariffaDinamica") //Strategia di default
     private TariffaStrategy tariffaStrategy;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
-    // ==========================================
-    // 1. METODI ORIGINALI (Dati Grezzi per Admin)
-    // Nessuna riga è stata modificata, così non si rompe nulla!
-    // ==========================================
+    @Transactional
+    public void aggiornaStatoVolo(Long idVolo, Volo.StatoVolo nuovoStato) {
+        Volo v = voloDAO.findById(idVolo)
+                .orElseThrow(() -> new RuntimeException("Volo non trovato con ID: " + idVolo));
+
+        v.setStato(nuovoStato);
+        voloDAO.save(v);
+
+        eventPublisher.publishEvent(new VoloStatoEvent(idVolo, v.getCodiceVolo(), nuovoStato));
+    }
 
     public List<Volo> getAllVoli() {
         return voloDAO.findAll();

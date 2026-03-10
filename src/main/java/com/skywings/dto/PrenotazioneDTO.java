@@ -13,6 +13,7 @@ public class PrenotazioneDTO {
     private LocalDateTime dataPrenotazione;
     private BigDecimal prezzoAcquistato;
     private String posto;
+    private String classe;
 
     public PrenotazioneDTO() {}
 
@@ -34,4 +35,6 @@ public class PrenotazioneDTO {
     public void setPrezzoAcquistato(BigDecimal prezzoAcquistato) { this.prezzoAcquistato = prezzoAcquistato; }
     public String getPosto() { return posto; }
     public void setPosto(String posto) { this.posto = posto; }
+    public String getClasse() { return classe; }
+    public void setClasse(String classe) { this.classe = classe; }
 }

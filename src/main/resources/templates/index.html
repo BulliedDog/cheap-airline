@@ -204,6 +204,7 @@
                             <th class="p-6 font-semibold">Route</th>
                             <th class="p-6 font-semibold">Booking Date</th>
                             <th class="p-6 font-semibold">Seat</th>
+                            <th class="p-6 font-semibold">Price</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-white/10 text-gray-200">
@@ -225,6 +226,9 @@
                             <td class="p-6" th:text="${#temporals.format(p.dataPrenotazione, 'dd/MM/yyyy HH:mm')}"></td>
                             <td class="p-6">
                                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-emerald-500/30 text-emerald-400" th:text="${p.posto}"></span>
+                            </td>
+                            <td class="text-emerald-400 font-bold">
+                                <span th:text="${#numbers.formatDecimal(p.prezzoAcquistato, 1, 2)} + ' €'"></span>
                             </td>
                         </tr>
                         <tr th:if="${miePrenotazioni == null or #lists.isEmpty(miePrenotazioni)}">
