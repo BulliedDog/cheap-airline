@@ -33,17 +33,6 @@ public class VoloService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    @Transactional
-    public void aggiornaStatoVolo(Long idVolo, Volo.StatoVolo nuovoStato) {
-        Volo v = voloDAO.findById(idVolo)
-                .orElseThrow(() -> new RuntimeException("Volo non trovato con ID: " + idVolo));
-
-        v.setStato(nuovoStato);
-        voloDAO.save(v);
-
-        eventPublisher.publishEvent(new VoloStatoEvent(idVolo, v.getCodiceVolo(), nuovoStato));
-    }
-
     public List<Volo> getAllVoli() {
         return voloDAO.findAll();
     }
@@ -56,12 +45,47 @@ public class VoloService {
         return voloDAO.findVoliFiltered(originId, destId, date);
     }
 
-    public void createVolo(Volo volo) {
-        voloDAO.save(volo);
+    @Transactional
+    public void saveVolo(Volo voloAggiornato) {
+        // 1. Verifichiamo se il volo esiste già (è un update)
+        if (voloAggiornato.getId() != null) {
+            Volo voloAttuale = voloDAO.findById(voloAggiornato.getId())
+                    .orElseThrow(() -> new RuntimeException("Volo non trovato"));
+
+            // 2. Controllo se lo stato è cambiato
+            boolean statoCambiato = !voloAttuale.getStato().equals(voloAggiornato.getStato());
+
+            // 3. Eseguo l'update/save
+            voloDAO.save(voloAggiornato);
+
+            // 4. Pubblico l'evento solo se lo stato è effettivamente cambiato
+            if (statoCambiato) {
+                eventPublisher.publishEvent(new VoloStatoEvent(
+                        voloAggiornato.getId(),
+                        voloAggiornato.getCodiceVolo(),
+                        voloAggiornato.getStato()
+                ));
+                System.out.println("DEBUG: Stato cambiato in " + voloAggiornato.getStato() + ". Evento pubblicato.");
+            }
+        } else {
+            // Se l'ID è null, è un nuovo inserimento (Create)
+            voloDAO.save(voloAggiornato);
+            System.out.println("DEBUG: Nuovo volo creato, nessun evento di cambio stato necessario.");
+        }
     }
 
-    public void updateVolo(Volo volo) {
-        voloDAO.update(volo);
+    @Transactional
+    public void aggiornaStatoVolo(Long idVolo, Volo.StatoVolo nuovoStato) {
+        Volo v = voloDAO.findById(idVolo)
+                .orElseThrow(() -> new RuntimeException("Volo non trovato con ID: " + idVolo));
+
+        // Controllo se è davvero una variazione
+        if (!v.getStato().equals(nuovoStato)) {
+            System.out.println("DEBUG: Pubblicazione evento per volo " + idVolo + "aggiornaStatoVolo");
+            v.setStato(nuovoStato);
+            voloDAO.save(v);
+            eventPublisher.publishEvent(new VoloStatoEvent(idVolo, v.getCodiceVolo(), nuovoStato));
+        }
     }
 
     public void deleteVolo(Long id) {

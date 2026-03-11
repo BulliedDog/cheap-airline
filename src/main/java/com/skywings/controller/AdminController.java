@@ -152,7 +152,7 @@ public class AdminController {
         model.addAttribute("entity", editProviders.get(key).apply(id));
 
         if (modelName.equals("voli")) {
-            model.addAttribute("listaAerei", aereoService.getAllAerei()); // o aereoRepository.findAll()
+            model.addAttribute("listaAerei", aereoService.getAllAerei());
             model.addAttribute("listaCitta", cittaService.getAllCitta());
         }
         else if (modelName.equals("prenotazioni")) {
@@ -211,7 +211,7 @@ public class AdminController {
 
     @PostMapping("/aerei/save") public String saveAereo(@ModelAttribute("entity") Aereo aereo) { aereoService.addAereo(aereo); return "redirect:/admin/aerei"; }
     @PostMapping("/citta/save") public String saveCitta(@ModelAttribute("entity") Citta citta) { cittaService.addCitta(citta); return "redirect:/admin/citta"; }
-    @PostMapping("/voli/save") public String saveVolo(@ModelAttribute("entity") Volo volo) { voloService.createVolo(volo); return "redirect:/admin/voli"; }
+    @PostMapping("/voli/save") public String saveVolo(@ModelAttribute("entity") Volo volo) { voloService.saveVolo(volo); return "redirect:/admin/voli"; }
     @PostMapping("/utenti/save")
     public String saveUtente(@ModelAttribute("entity") Utente utente) {
         // Se la password è vuota o composta solo da spazi, la rendiamo null

@@ -28,6 +28,7 @@ public class PrenotazioneRepository implements PrenotazioneDAO {
         }
         p.setPrezzoAcquistato(rs.getBigDecimal("prezzo_acquistato"));
         p.setPosto(rs.getString("posto"));
+        p.setClasse(rs.getString("classe"));
         return p;
     };
 
