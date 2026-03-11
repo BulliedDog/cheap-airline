@@ -92,12 +92,6 @@ public class VoloService {
         voloDAO.deleteById(id);
     }
 
-
-    // ==========================================
-    // 2. NUOVI METODI PER UTENTI (Con DTO e Strategy)
-    // Da chiamare nei Controller dedicati ai passeggeri
-    // ==========================================
-
     public List<VoloDTO> getAllVoliConPrezzo() {
         // Riusiamo il metodo originale per prendere i dati dal DB
         List<Volo> voliDalDb = getAllVoli();
